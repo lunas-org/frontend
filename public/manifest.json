@@ -1,0 +1,10 @@
+{
+  "name": "Lunas",
+  "short_name": "Lunas",
+  "description": "Bayar dari mana saja. Lunas.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FBFAF7",
+  "theme_color": "#FBFAF7",
+  "icons": []
+}
