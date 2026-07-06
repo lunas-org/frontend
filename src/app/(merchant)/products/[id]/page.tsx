@@ -1,13 +1,14 @@
 "use client";
 
-// Product detail — CLAUDE.md §9 screen 4: the QR (large), the shareable link, "Bagikan via
-// WhatsApp", live count of paid orders.
+// Product detail — CLAUDE.md §9 screen 4, redesigned per the Claude Design mockup (screen 06):
+// QR card, copy-link + WhatsApp actions, the raw link shown inline, "Preview as buyer".
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
-import { getProduct, getOrdersForProduct, type Product, type Order } from "@/lib/store";
+import { ArrowLeft, CheckCircle, Link as LinkIcon, WhatsappLogo, Eye } from "@phosphor-icons/react/dist/ssr";
+import { getProduct, getOrdersForProduct, getProfile, type Product, type Order } from "@/lib/store";
+import { Frame } from "@/components/Frame";
 
 export default function ProductDetailPage() {
   const params = useParams<{ id: string }>();
@@ -36,6 +37,9 @@ export default function ProductDetailPage() {
       url.searchParams.set("orderId", order.id);
       url.searchParams.set("checkoutAddress", order.checkoutAddress);
       url.searchParams.set("chainId", String(order.chainId));
+      const profile = getProfile();
+      if (profile?.displayName) url.searchParams.set("merchant", profile.displayName);
+      if (profile?.waNumber) url.searchParams.set("wa", profile.waNumber.replace(/[^0-9]/g, ""));
       setCheckoutUrl(url.toString());
     }
   }, [params.id, router]);
@@ -44,62 +48,89 @@ export default function ProductDetailPage() {
     if (!checkoutUrl) return;
     await navigator.clipboard.writeText(checkoutUrl);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 1800);
   }
 
   if (!product || !checkoutUrl) {
     return (
-      <main className="flex min-h-screen items-center justify-center p-8">
-        <p className="text-muted">Memuat...</p>
-      </main>
+      <Frame>
+        <div className="flex min-h-screen items-center justify-center p-8">
+          <p className="text-muted">Loading...</p>
+        </div>
+      </Frame>
     );
   }
 
   const paidCount = orders.filter((o) => o.status === "paid").length;
-  const whatsappText = encodeURIComponent(`Bayar "${product.title}" ($${product.priceUsd}): ${checkoutUrl}`);
+  const whatsappText = encodeURIComponent(`Pay for "${product.title}" ($${product.priceUsd}): ${checkoutUrl}`);
+  const shortLink = checkoutUrl.replace(/^https?:\/\//, "").replace(/\?.*$/, `/${product.id.slice(0, 8)}`);
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="px-5 pt-6">
-        <Link href="/dashboard" className="text-sm text-muted">
-          ← Kembali
-        </Link>
-      </header>
+    <Frame>
+      <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
+        <div className="flex items-center gap-2 py-3.5">
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="-ml-2.5 flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-black/5 active:scale-95"
+          >
+            <ArrowLeft className="text-xl text-ink" />
+          </button>
+          <h1 className="font-display flex-1 truncate text-[22px] font-extrabold tracking-tight text-ink">
+            {product.title}
+          </h1>
+        </div>
 
-      <main className="flex flex-1 flex-col items-center gap-6 px-5 pb-28 pt-4 text-center">
-        <div>
-          <p className="text-lg font-medium text-ink">{product.title}</p>
-          <p className="font-display text-3xl font-semibold tabular-nums text-ink">
-            ${product.priceUsd}
+        <div className="flex items-center gap-4 py-1 pb-[18px]">
+          <p className="font-display text-[26px] font-extrabold text-ink">
+            {product.priceUsd} <span className="text-sm font-semibold text-muted">USDC</span>
           </p>
+          <div className="flex items-center gap-1.5 rounded-full bg-success/10 px-3 py-1.5 text-[12.5px] font-semibold text-success">
+            <CheckCircle weight="fill" className="text-[15px]" />
+            {paidCount} paid
+          </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-5 shadow-sm">
-          <QRCodeSVG value={checkoutUrl} size={220} />
+        <div className="flex flex-col items-center gap-3.5 rounded-[22px] border border-line bg-white p-6 shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
+          <QRCodeSVG value={checkoutUrl} size={210} />
+          <p className="text-center text-[13px] text-muted">Buyers scan this to pay instantly</p>
         </div>
+
+        <div className="mt-4 flex gap-2.5">
+          <button
+            onClick={handleCopy}
+            className={`flex h-[50px] flex-1 items-center justify-center gap-2 rounded-[13px] border border-line bg-white text-sm font-semibold transition-transform hover:bg-black/[.03] active:scale-95 ${
+              copied ? "text-success" : "text-ink"
+            }`}
+          >
+            {copied ? <CheckCircle weight="fill" className="text-lg" /> : <LinkIcon className="text-lg" />}
+            {copied ? "Copied" : "Copy link"}
+          </button>
+          <a
+            href={`https://wa.me/?text=${whatsappText}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-[50px] flex-1 items-center justify-center gap-2 rounded-[13px] bg-success text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
+          >
+            <WhatsappLogo weight="fill" className="text-lg" />
+            WhatsApp
+          </a>
+        </div>
+
+        <div className="mt-3.5 flex items-center gap-2.5 rounded-[13px] bg-primary/5 px-4 py-3.5">
+          <LinkIcon className="flex-none text-[17px] text-primary" />
+          <span className="truncate text-[13px] font-medium text-primary">{shortLink}</span>
+        </div>
+
+        <div className="flex-1" />
 
         <button
-          onClick={handleCopy}
-          className="w-full max-w-sm rounded-2xl border border-line px-4 py-3 text-sm text-muted"
+          onClick={() => router.push(checkoutUrl)}
+          className="flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-semibold text-muted transition-colors hover:bg-black/[.04] hover:text-ink"
         >
-          {copied ? "Disalin!" : "Salin link pembayaran"}
+          <Eye className="text-lg" />
+          Preview as buyer
         </button>
-
-        <p className="text-sm text-muted">
-          {paidCount === 0 ? "Belum ada yang bayar" : `${paidCount} pesanan sudah Lunas`}
-        </p>
-      </main>
-
-      <div className="sticky bottom-0 border-t border-line bg-paper p-4">
-        <a
-          href={`https://wa.me/?text=${whatsappText}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mx-auto flex max-w-sm items-center justify-center rounded-2xl bg-primary px-6 py-4 font-medium text-paper"
-        >
-          Bagikan via WhatsApp
-        </a>
       </div>
-    </div>
+    </Frame>
   );
 }

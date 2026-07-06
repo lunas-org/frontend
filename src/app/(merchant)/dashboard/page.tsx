@@ -1,18 +1,35 @@
 "use client";
 
-// Merchant dashboard — CLAUDE.md §9 screen 2: Saldo, "+ Buat Produk", list of recent Pesanan
-// with status pills. Saldo is still a mock ($0 — needs an on-chain balance read, not built yet).
-// Pesanan list reads from the local store (see src/lib/store.ts) — stands in for Supabase.
-// Mobile-first: primary action pinned to the thumb zone at the bottom of the screen.
+// Merchant dashboard — CLAUDE.md §9 screen 2, redesigned per the Claude Design mockup (screen
+// 04): balance card, "Create product" in the thumb zone, recent orders with a real empty state,
+// bottom nav. Balance reads the merchant's actual USDC balance on Arbitrum (see
+// src/lib/zerodev.ts's getUsdcBalance) since Checkout.sol forwards funds straight to the
+// merchant's wallet — there's no separate ledger to fake.
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { isLoggedIn, getMagicProvider, logout } from "@/lib/magic";
-import { createSmartAccountFromProvider } from "@/lib/zerodev";
-import { listOrders, listProducts, type Order, type Product } from "@/lib/store";
+import Image from "next/image";
+import { Plus, ArrowCircleUp, Check, User } from "@phosphor-icons/react/dist/ssr";
+import { isLoggedIn, getMagicProvider } from "@/lib/magic";
+import { createSmartAccountFromProvider, getUsdcBalance } from "@/lib/zerodev";
+import { listOrders, listProducts, getProfile, type Order, type Product } from "@/lib/store";
+import { Frame } from "@/components/Frame";
+import { BottomNav } from "@/components/BottomNav";
 
 type Status = "loading" | "error" | "ready";
+
+function relativeTime(ms: number) {
+  const d = new Date(ms);
+  const now = new Date();
+  const isToday = d.toDateString() === now.toDateString();
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday = d.toDateString() === yesterday.toDateString();
+  const time = d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+  if (isToday) return `Today · ${time}`;
+  if (isYesterday) return `Yesterday · ${time}`;
+  return `${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${time}`;
+}
 
 export default function MerchantDashboardPage() {
   const router = useRouter();
@@ -20,6 +37,9 @@ export default function MerchantDashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [balance, setBalance] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState("Your business");
+  const [avatar, setAvatar] = useState<string | undefined>(undefined);
 
   const ranRef = useRef(false);
 
@@ -34,12 +54,22 @@ export default function MerchantDashboardPage() {
           router.replace("/login");
           return;
         }
-        // Not shown in the UI (no wallet talk per CLAUDE.md's North Star) — just needs to be
-        // created so the account exists; the address itself is only used internally elsewhere.
         const provider = getMagicProvider();
-        await createSmartAccountFromProvider(provider);
+        const { address } = await createSmartAccountFromProvider(provider);
+
+        const profile = getProfile();
+        if (profile?.displayName) setDisplayName(profile.displayName);
+        if (profile?.avatarDataUrl) setAvatar(profile.avatarDataUrl);
+
         setOrders(listOrders());
         setProducts(listProducts());
+
+        try {
+          setBalance(await getUsdcBalance(address));
+        } catch {
+          setBalance(null);
+        }
+
         setStatus("ready");
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
@@ -48,82 +78,141 @@ export default function MerchantDashboardPage() {
     })();
   }, [router]);
 
-  async function handleLogout() {
-    await logout();
-    router.replace("/login");
-  }
-
   function productTitle(productId: string) {
-    return products.find((p) => p.id === productId)?.title ?? "Produk";
+    return products.find((p) => p.id === productId)?.title ?? "Product";
+  }
+  function productPrice(productId: string) {
+    return products.find((p) => p.id === productId)?.priceUsd ?? "0.00";
   }
 
-  if (status === "loading") {
-    return (
-      <main className="flex min-h-screen items-center justify-center p-8">
-        <p className="text-muted">Memuat...</p>
-      </main>
-    );
-  }
+  const paidOrders = orders.filter((o) => o.status === "paid");
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const weekTotal = paidOrders
+    .filter((o) => (o.paidAt ?? 0) >= weekAgo)
+    .reduce((sum, o) => sum + parseFloat(productPrice(o.productId) || "0"), 0);
 
   if (status === "error") {
     return (
-      <main className="flex min-h-screen items-center justify-center p-8 text-center">
-        <p className="text-sm text-red-600">Gagal: {error}</p>
-      </main>
+      <Frame>
+        <div className="flex min-h-screen items-center justify-center p-8 text-center">
+          <p className="text-sm text-danger">Something went wrong: {error}</p>
+        </div>
+      </Frame>
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-between px-5 pt-6">
-        <p className="font-display text-lg font-semibold text-ink">Lunas</p>
-        <button onClick={handleLogout} className="text-sm text-muted">
-          Keluar
-        </button>
-      </header>
+    <Frame>
+      <div className="min-h-screen pb-[92px] animate-fade-up">
+        <div className="flex items-center justify-between px-[22px] pb-1.5 pt-5">
+          <div>
+            <p className="text-[12.5px] text-muted">Good to see you</p>
+            <p className="font-display mt-0.5 text-[19px] font-bold text-ink">{displayName}</p>
+          </div>
+          <button
+            onClick={() => router.push("/settings")}
+            className="flex h-[42px] w-[42px] items-center justify-center overflow-hidden rounded-full border border-line bg-white transition-transform active:scale-95"
+          >
+            {avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatar} alt="" width={42} height={42} className="h-full w-full object-cover" />
+            ) : (
+              <User className="text-[19px] text-muted" />
+            )}
+          </button>
+        </div>
 
-      <main className="flex flex-1 flex-col gap-8 px-5 pb-28 pt-8">
-        <section className="text-center">
-          <p className="text-sm text-muted">Saldo</p>
-          <p className="font-display text-5xl font-semibold tabular-nums text-ink">$0</p>
-        </section>
+        {status === "loading" ? (
+          <div className="flex flex-col gap-3.5 px-[22px] py-4">
+            <div className="skeleton h-[148px] rounded-[20px]" />
+            <div className="skeleton h-[52px] rounded-2xl" />
+            <div className="mt-2.5 h-5 w-[120px] rounded-md bg-black/[.06]" />
+            <div className="skeleton h-16 rounded-2xl" />
+            <div className="skeleton h-16 rounded-2xl" style={{ animationDelay: ".1s" }} />
+          </div>
+        ) : (
+          <>
+            <div className="px-[22px] pt-4">
+              <div className="relative overflow-hidden rounded-[20px] bg-primary px-6 py-[26px] text-white">
+                <div className="absolute -bottom-[38px] -right-[30px] h-[150px] w-[150px] rounded-full bg-white/5" />
+                <div className="absolute -bottom-3.5 right-3.5 h-[74px] w-[74px] rounded-full bg-mint/10" />
+                <p className="relative text-[12.5px] text-white/65">Available balance</p>
+                <p className="font-display relative mt-1.5 text-[38px] font-extrabold leading-none tracking-tight">
+                  {balance ?? "0.00"} <span className="text-base font-semibold text-white/60">USDC</span>
+                </p>
+                <div className="relative mt-3.5 flex items-center gap-1.5 text-[12.5px] text-mint">
+                  <ArrowCircleUp weight="fill" className="text-[15px]" />
+                  +{weekTotal.toFixed(2)} this week
+                </div>
+              </div>
 
-        <section className="mx-auto w-full max-w-md text-left">
-          <p className="mb-3 text-sm text-muted">Pesanan</p>
-          {orders.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-line px-4 py-8 text-center">
-              <p className="text-sm text-muted">Belum ada pesanan. Yuk buat produk pertamamu.</p>
+              <button
+                onClick={() => router.push("/products/new")}
+                className="mt-3.5 flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-ink text-[15px] font-semibold text-white transition-opacity hover:opacity-90 active:scale-[.97]"
+              >
+                <Plus className="text-lg" />
+                Create product
+              </button>
             </div>
-          ) : (
-            <ul className="flex flex-col gap-2">
-              {orders.map((order) => (
-                <li
-                  key={order.id}
-                  className="flex items-center justify-between rounded-2xl border border-line bg-paper px-4 py-3"
-                >
-                  <span className="text-sm text-ink">{productTitle(order.productId)}</span>
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${
-                      order.status === "paid" ? "bg-success text-paper" : "bg-line text-muted"
-                    }`}
-                  >
-                    {order.status === "paid" ? "Lunas ✓" : "Menunggu"}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </main>
 
-      <div className="sticky bottom-0 border-t border-line bg-paper p-4">
-        <Link
-          href="/products/new"
-          className="mx-auto flex max-w-md items-center justify-center rounded-2xl bg-primary px-6 py-4 font-medium text-paper"
-        >
-          + Buat Produk
-        </Link>
+            <div className="px-[22px] pt-[26px]">
+              <div className="mb-3 flex items-baseline justify-between">
+                <p className="font-display text-[16.5px] font-bold text-ink">Recent orders</p>
+                {orders.length > 0 && <span className="text-[12.5px] text-muted">{orders.length} total</span>}
+              </div>
+
+              {orders.length === 0 ? (
+                <div className="flex flex-col items-center gap-3.5 rounded-[20px] border border-dashed border-line bg-white px-6 py-9 text-center">
+                  <div className="relative h-24 w-24">
+                    <div className="absolute inset-0 rounded-full border-[1.5px] border-dashed border-primary/25" />
+                    <div className="absolute inset-3.5 flex items-center justify-center rounded-full bg-primary/5">
+                      <Image src="/icon.png" alt="" width={44} height={44} className="animate-float opacity-90" />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-display mb-1 text-base font-bold text-ink">No orders yet</p>
+                    <p className="max-w-[230px] text-[13px] leading-relaxed text-muted">
+                      Share a product link and your first Lunas&nbsp;✓ will show up here.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => router.push("/products/new")}
+                    className="h-[42px] rounded-xl border border-primary/30 px-5 text-[13.5px] font-semibold text-primary transition-colors hover:bg-primary/[.06] active:scale-95"
+                  >
+                    Create your first product
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2.5">
+                  {orders.map((o) => (
+                    <div key={o.id} className="flex items-center gap-3.5 rounded-2xl border border-line bg-white px-4 py-3.5">
+                      <div
+                        className={`flex h-[38px] w-[38px] flex-none items-center justify-center rounded-xl ${
+                          o.status === "paid" ? "bg-success/10" : "bg-black/[.05]"
+                        }`}
+                      >
+                        <Check weight="fill" className={`text-[17px] ${o.status === "paid" ? "text-success" : "text-muted"}`} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-ink">{productTitle(o.productId)}</p>
+                        <p className="mt-0.5 text-xs text-muted">{relativeTime(o.paidAt ?? o.createdAt)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-display text-[14.5px] font-bold text-ink">+{productPrice(o.productId)}</p>
+                        <p className={`mt-0.5 text-[11px] font-semibold ${o.status === "paid" ? "text-success" : "text-muted"}`}>
+                          {o.status === "paid" ? "Lunas ✓" : "Pending"}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        <BottomNav active="home" />
       </div>
-    </div>
+    </Frame>
   );
 }

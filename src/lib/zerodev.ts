@@ -23,6 +23,7 @@ import {
   SMART_ROUTING_ADDRESS_SERVER_URL,
 } from "@zerodev/smart-routing-address";
 import { checkoutAbi } from "./checkoutAbi";
+import { erc20Abi } from "./erc20Abi";
 
 const chain = process.env.NEXT_PUBLIC_CHAIN === "arbitrum" ? arbitrum : arbitrumSepolia;
 const entryPoint = { address: entryPoint07Address, version: "0.7" as const };
@@ -119,6 +120,24 @@ export async function createProductPaymentAddress({
   });
 
   return smartRoutingAddress;
+}
+
+/** Merchant's settled balance = their own USDC balance on Arbitrum One, since Checkout.sol
+ * forwards funds to the merchant's wallet the instant an order is fulfilled (CLAUDE.md §8:
+ * "Payment truth = on-chain"). Returns a human-readable string like "1240.50" (USDC has 6
+ * decimals), or null if NEXT_PUBLIC_USDC_ADDRESS isn't configured. */
+export async function getUsdcBalance(address: `0x${string}`): Promise<string | null> {
+  const usdcAddress = process.env.NEXT_PUBLIC_USDC_ADDRESS as `0x${string}` | undefined;
+  if (!usdcAddress) return null;
+
+  const publicClient = createPublicClient({ chain: arbitrum, transport: http() });
+  const raw = await publicClient.readContract({
+    address: usdcAddress,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: [address],
+  });
+  return (Number(raw) / 1e6).toFixed(2);
 }
 
 export function generateOrderId(): `0x${string}` {

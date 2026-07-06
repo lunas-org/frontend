@@ -15,6 +15,8 @@ const config: Config = {
         paper: "var(--paper)",
         primary: "var(--primary)",
         success: "var(--success)",
+        mint: "var(--mint)",
+        danger: "var(--danger)",
         muted: "var(--muted)",
         line: "var(--line)",
       },

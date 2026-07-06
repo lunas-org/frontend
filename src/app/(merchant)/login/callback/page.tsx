@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { handleOAuthRedirect, getMagicProvider } from "@/lib/magic";
 import { createSmartAccountFromProvider } from "@/lib/zerodev";
+import { hasSeenProfileSetup } from "@/lib/store";
 import { CalmLoader } from "@/components/CalmLoader";
 
 type Status = "loading" | "error";
@@ -29,7 +30,7 @@ export default function LoginCallbackPage() {
         await createSmartAccountFromProvider(provider);
         // This page is a one-shot OAuth redirect target — a refresh here has no PKCE
         // session left to consume. Move to a stable page immediately on success.
-        router.replace("/dashboard");
+        router.replace(hasSeenProfileSetup() ? "/dashboard" : "/profile-setup");
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
         setStatus("error");
@@ -39,8 +40,8 @@ export default function LoginCallbackPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
-      {status === "loading" && <CalmLoader label="Menyiapkan akun kamu..." />}
-      {status === "error" && <p className="text-sm text-red-600">Gagal: {error}</p>}
+      {status === "loading" && <CalmLoader label="Setting up your account..." />}
+      {status === "error" && <p className="text-sm text-red-600">Something went wrong: {error}</p>}
     </main>
   );
 }

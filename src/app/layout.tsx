@@ -20,7 +20,7 @@ const inter = localFont({
 
 export const metadata: Metadata = {
   title: "Lunas",
-  description: "Bayar dari mana saja. Lunas.",
+  description: "Get paid from anywhere. Lunas.",
   manifest: "/manifest.json",
 };
 
@@ -37,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id">
+    <html lang="en">
       <body className={`${hankenGrotesk.variable} ${inter.variable} antialiased`}>{children}</body>
     </html>
   );

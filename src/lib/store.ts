@@ -24,8 +24,15 @@ export type Order = {
   paidAt?: number;
 };
 
+export type Profile = {
+  displayName: string;
+  avatarDataUrl?: string;
+  waNumber?: string;
+};
+
 const PRODUCTS_KEY = "lunas:products";
 const ORDERS_KEY = "lunas:orders";
+const PROFILE_KEY = "lunas:profile";
 
 function read<T>(key: string): T[] {
   if (typeof window === "undefined") return [];
@@ -79,4 +86,30 @@ export function markOrderPaid(id: string) {
   const orders = read<Order>(ORDERS_KEY);
   const updated = orders.map((o) => (o.id === id ? { ...o, status: "paid" as const, paidAt: Date.now() } : o));
   write(ORDERS_KEY, updated);
+}
+
+export function getProfile(): Profile | null {
+  if (typeof window === "undefined") return null;
+  const raw = window.localStorage.getItem(PROFILE_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as Profile;
+  } catch {
+    return null;
+  }
+}
+
+export function saveProfile(profile: Profile) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+}
+
+export function hasSeenProfileSetup(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem("lunas:profile-setup-seen") === "1";
+}
+
+export function markProfileSetupSeen() {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem("lunas:profile-setup-seen", "1");
 }

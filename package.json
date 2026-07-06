@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@magic-ext/oauth2": "^15.8.0",
+    "@phosphor-icons/react": "^2.1.7",
     "@magic-sdk/provider": "^33.7.1",
     "@supabase/supabase-js": "^2.110.0",
     "@zerodev/ecdsa-validator": "^5.4.9",
