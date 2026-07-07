@@ -13,8 +13,6 @@ import { Plus, ArrowCircleUp, Check, User } from "@phosphor-icons/react/dist/ssr
 import { isLoggedIn, getMagicProvider } from "@/lib/magic";
 import { createSmartAccountFromProvider, getUsdcBalance } from "@/lib/zerodev";
 import { listOrders, listProducts, getProfile, type Order, type Product } from "@/lib/store";
-import { Frame } from "@/components/Frame";
-import { BottomNav } from "@/components/BottomNav";
 
 type Status = "loading" | "error" | "ready";
 
@@ -93,17 +91,14 @@ export default function MerchantDashboardPage() {
 
   if (status === "error") {
     return (
-      <Frame>
-        <div className="flex min-h-screen items-center justify-center p-8 text-center">
-          <p className="text-sm text-danger">Something went wrong: {error}</p>
-        </div>
-      </Frame>
+      <div className="flex min-h-screen items-center justify-center p-8 text-center">
+        <p className="text-sm text-danger">Something went wrong: {error}</p>
+      </div>
     );
   }
 
   return (
-    <Frame>
-      <div className="min-h-screen pb-[92px] animate-fade-up">
+    <div className="min-h-screen pb-[92px] animate-fade-up">
         <div className="flex items-center justify-between px-[22px] pb-1.5 pt-5">
           <div>
             <p className="text-[12.5px] text-muted">Good to see you</p>
@@ -210,9 +205,6 @@ export default function MerchantDashboardPage() {
             </div>
           </>
         )}
-
-        <BottomNav active="home" />
-      </div>
-    </Frame>
+    </div>
   );
 }

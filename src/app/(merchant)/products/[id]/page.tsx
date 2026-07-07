@@ -8,7 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import { ArrowLeft, CheckCircle, Link as LinkIcon, WhatsappLogo, Eye } from "@phosphor-icons/react/dist/ssr";
 import { getProduct, getOrdersForProduct, getProfile, type Product, type Order } from "@/lib/store";
-import { Frame } from "@/components/Frame";
+import { CalmLoader } from "@/components/CalmLoader";
 
 export default function ProductDetailPage() {
   const params = useParams<{ id: string }>();
@@ -53,11 +53,9 @@ export default function ProductDetailPage() {
 
   if (!product || !checkoutUrl) {
     return (
-      <Frame>
-        <div className="flex min-h-screen items-center justify-center p-8">
-          <p className="text-muted">Loading...</p>
-        </div>
-      </Frame>
+      <div className="flex min-h-screen items-center justify-center p-8">
+        <CalmLoader label="Loading..." />
+      </div>
     );
   }
 
@@ -66,7 +64,6 @@ export default function ProductDetailPage() {
   const shortLink = checkoutUrl.replace(/^https?:\/\//, "").replace(/\?.*$/, `/${product.id.slice(0, 8)}`);
 
   return (
-    <Frame>
       <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
         <div className="flex items-center gap-2 py-3.5">
           <button
@@ -124,13 +121,16 @@ export default function ProductDetailPage() {
         <div className="flex-1" />
 
         <button
-          onClick={() => router.push(checkoutUrl)}
+          onClick={() => {
+            const previewUrl = new URL(checkoutUrl);
+            previewUrl.searchParams.set("preview", "1");
+            router.push(previewUrl.toString());
+          }}
           className="flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-semibold text-muted transition-colors hover:bg-black/[.04] hover:text-ink"
         >
           <Eye className="text-lg" />
           Preview as buyer
         </button>
       </div>
-    </Frame>
   );
 }

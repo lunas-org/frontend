@@ -9,8 +9,6 @@ import Image from "next/image";
 import { Camera, Tag, CaretRight, SignOut } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn, logout } from "@/lib/magic";
 import { listProducts, listOrders, getProfile, saveProfile, type Product } from "@/lib/store";
-import { Frame } from "@/components/Frame";
-import { BottomNav } from "@/components/BottomNav";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -72,15 +70,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <Frame>
-      <div className="min-h-screen px-6 pb-[92px] animate-fade-up">
-        <div className="flex items-center gap-2 py-3.5">
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="-ml-2.5 flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-black/5 active:scale-95"
-          >
-            <span className="text-xl text-ink">←</span>
-          </button>
+    <div className="min-h-screen px-6 pb-[92px] animate-fade-up">
+        <div className="flex items-center py-3.5">
           <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">Settings</h1>
         </div>
 
@@ -152,9 +143,6 @@ export default function SettingsPage() {
           <SignOut className="text-lg" />
           Log out
         </button>
-
-        <BottomNav active="settings" />
-      </div>
-    </Frame>
+    </div>
   );
 }

@@ -13,7 +13,7 @@ import { ArrowLeft, Tag, WarningCircle } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn, getMagicProvider } from "@/lib/magic";
 import { createSmartAccountFromProvider, createProductPaymentAddress, generateOrderId } from "@/lib/zerodev";
 import { saveProduct, saveOrder, getProfile } from "@/lib/store";
-import { Frame } from "@/components/Frame";
+import { CalmLoader } from "@/components/CalmLoader";
 
 type Status = "checking" | "form" | "creating" | "error";
 
@@ -113,16 +113,13 @@ export default function NewProductPage() {
 
   if (status === "checking") {
     return (
-      <Frame>
-        <div className="flex min-h-screen items-center justify-center p-8">
-          <p className="text-muted">Loading...</p>
-        </div>
-      </Frame>
+      <div className="flex min-h-screen items-center justify-center p-8">
+        <CalmLoader label="Loading..." />
+      </div>
     );
   }
 
   return (
-    <Frame>
       <form onSubmit={handleSubmit} className="flex min-h-screen flex-col px-6 pb-6 animate-fade-up">
         <div className="flex items-center gap-2 py-3.5">
           <button
@@ -210,6 +207,5 @@ export default function NewProductPage() {
           {status === "creating" ? "Creating link…" : "Create payment link"}
         </button>
       </form>
-    </Frame>
   );
 }
