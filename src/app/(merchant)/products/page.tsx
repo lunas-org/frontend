@@ -12,9 +12,11 @@ import { Tag, CaretRight, Plus } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn } from "@/lib/magic";
 import { listProducts, listOrders, type Product } from "@/lib/store";
 import { CalmLoader } from "@/components/CalmLoader";
+import { useI18n } from "@/lib/i18n";
 
 export default function ProductsListPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [products, setProducts] = useState<Product[]>([]);
   const [paidCounts, setPaidCounts] = useState<Record<string, number>>({});
   const [ready, setReady] = useState(false);
@@ -45,34 +47,32 @@ export default function ProductsListPage() {
   return (
     <div className="min-h-screen px-6 pb-[92px] animate-fade-up">
         <div className="flex items-center justify-between py-5">
-          <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">Products</h1>
+          <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">{t("products.title")}</h1>
           <button
             onClick={() => router.push("/products/new")}
             className="flex h-9 items-center gap-1.5 rounded-[10px] bg-primary px-3.5 text-[13px] font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
           >
             <Plus className="text-base" />
-            New
+            {t("products.new")}
           </button>
         </div>
 
         {!ready && (
           <div className="flex justify-center py-10">
-            <CalmLoader label="Loading..." />
+            <CalmLoader label={t("common.loading")} />
           </div>
         )}
 
         {ready && products.length === 0 && (
           <div className="flex flex-col items-center gap-3.5 rounded-[20px] border border-dashed border-line bg-white px-6 py-9 text-center">
             <Image src="/empty-products.png" alt="" width={128} height={128} className="animate-float" />
-            <p className="font-display text-base font-bold text-ink">No products yet</p>
-            <p className="max-w-[230px] text-[13px] leading-relaxed text-muted">
-              Create a product to get a payment link and QR you can share.
-            </p>
+            <p className="font-display text-base font-bold text-ink">{t("products.emptyTitle")}</p>
+            <p className="max-w-[230px] text-[13px] leading-relaxed text-muted">{t("products.emptyDesc")}</p>
             <button
               onClick={() => router.push("/products/new")}
               className="h-[42px] rounded-xl border border-primary/30 px-5 text-[13.5px] font-semibold text-primary transition-colors hover:bg-primary/[.06] active:scale-95"
             >
-              Create your first product
+              {t("products.emptyCta")}
             </button>
           </div>
         )}
@@ -89,7 +89,7 @@ export default function ProductsListPage() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-ink">{p.title}</p>
-                <p className="mt-0.5 text-xs text-muted">{paidCounts[p.id] ?? 0} paid</p>
+                <p className="mt-0.5 text-xs text-muted">{t("products.paidCount", { count: paidCounts[p.id] ?? 0 })}</p>
               </div>
               <span className="font-display whitespace-nowrap text-[14.5px] font-bold text-ink">${p.priceUsd}</span>
               <CaretRight className="text-[15px] text-muted" />

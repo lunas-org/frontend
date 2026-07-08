@@ -15,15 +15,17 @@ import { createSmartAccountFromProvider, createProductPaymentAddress, generateOr
 import { saveProduct, saveOrder, getProfile } from "@/lib/store";
 import { CalmLoader } from "@/components/CalmLoader";
 import { idrEstimate } from "@/lib/format";
+import { useI18n } from "@/lib/i18n";
 
 type Status = "checking" | "form" | "creating" | "error";
 
 export default function NewProductPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [status, setStatus] = useState<Status>("checking");
   const [error, setError] = useState<string | null>(null);
   const [merchant, setMerchant] = useState<string | null>(null);
-  const [displayName, setDisplayName] = useState("your business");
+  const [displayName, setDisplayName] = useState("");
 
   const [title, setTitle] = useState("");
   const [priceUsd, setPriceUsd] = useState("");
@@ -115,7 +117,7 @@ export default function NewProductPage() {
   if (status === "checking") {
     return (
       <div className="flex min-h-screen items-center justify-center p-8">
-        <CalmLoader label="Loading..." />
+        <CalmLoader label={t("common.loading")} />
       </div>
     );
   }
@@ -130,17 +132,17 @@ export default function NewProductPage() {
           >
             <ArrowLeft className="text-xl text-ink" />
           </button>
-          <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">New product</h1>
+          <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">{t("newProduct.title")}</h1>
         </div>
 
         <div className="flex flex-col gap-[18px] pt-3">
           <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-ink">Product name</label>
+            <label className="text-[13px] font-semibold text-ink">{t("newProduct.nameLabel")}</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onBlur={() => setTouchedName(true)}
-              placeholder="e.g. Workshop ticket"
+              placeholder={t("newProduct.namePlaceholder")}
               className={`h-[52px] rounded-[13px] border-[1.5px] bg-white px-4 text-[15px] text-ink transition-shadow focus:shadow-[0_0_0_3px_rgba(47,42,107,0.12)] focus:outline-none ${
                 nameError ? "border-danger focus:border-danger" : "border-line focus:border-primary"
               }`}
@@ -148,13 +150,13 @@ export default function NewProductPage() {
             {nameError && (
               <p className="flex items-center gap-1.5 text-[12.5px] text-danger">
                 <WarningCircle className="text-sm" />
-                Give your product a name
+                {t("newProduct.nameError")}
               </p>
             )}
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-ink">Price</label>
+            <label className="text-[13px] font-semibold text-ink">{t("newProduct.priceLabel")}</label>
             <div className="relative">
               <input
                 value={priceUsd}
@@ -171,21 +173,21 @@ export default function NewProductPage() {
             {priceError && (
               <p className="flex items-center gap-1.5 text-[12.5px] text-danger">
                 <WarningCircle className="text-sm" />
-                Enter a price above 0
+                {t("newProduct.priceError")}
               </p>
             )}
           </div>
         </div>
 
         <div className="mt-[26px]">
-          <p className="mb-2.5 text-xs font-semibold uppercase tracking-[.1em] text-muted">Buyers will see</p>
+          <p className="mb-2.5 text-xs font-semibold uppercase tracking-[.1em] text-muted">{t("newProduct.buyersSee")}</p>
           <div className="flex items-center gap-3.5 rounded-[18px] border border-line bg-white p-5 shadow-[0_4px_16px_rgba(21,22,27,0.04)]">
             <div className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-primary/[.07]">
               <Tag className="text-xl text-primary" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs text-muted">Paying {displayName}</p>
-              <p className="mt-0.5 truncate text-[15px] font-semibold text-ink">{title.trim() || "Your product"}</p>
+              <p className="text-xs text-muted">{t("newProduct.payingName", { name: displayName || t("profile.defaultBusiness") })}</p>
+              <p className="mt-0.5 truncate text-[15px] font-semibold text-ink">{title.trim() || t("newProduct.yourProduct")}</p>
             </div>
             <div className="text-right">
               <p className="font-display whitespace-nowrap text-lg font-extrabold text-ink">
@@ -210,7 +212,7 @@ export default function NewProductPage() {
           {status === "creating" && (
             <Image src="/icon.png" alt="" width={22} height={22} className="animate-breathe brightness-[4]" style={{ animationDuration: ".9s" }} />
           )}
-          {status === "creating" ? "Creating link…" : "Create payment link"}
+          {status === "creating" ? t("newProduct.creating") : t("newProduct.create")}
         </button>
       </form>
   );

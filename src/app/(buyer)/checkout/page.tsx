@@ -21,34 +21,37 @@ import { checkoutAbi } from "@/lib/checkoutAbi";
 import { Frame } from "@/components/Frame";
 import { toast } from "@/components/Toast";
 import { idrEstimate } from "@/lib/format";
+import { useI18n } from "@/lib/i18n";
 
 const POLL_INTERVAL_MS = 4000;
 
 type Screen = "checkout" | "processing" | "success" | "errExpired" | "errPaid" | "underpaid" | "unsupportedToken";
+type T = ReturnType<typeof useI18n>["t"];
 
 function chainById(chainId: number) {
   return chainId === arbitrum.id ? arbitrum : arbitrumSepolia;
 }
 
-function agoLabel(ts: number) {
+function agoLabel(ts: number, t: T) {
   const s = Math.floor((Date.now() - ts) / 1000);
-  return s < 2 ? "just now" : `${s}s ago`;
+  return s < 2 ? t("checkout.justNow") : t("checkout.secondsAgo", { s });
 }
 
 function SecuredHeader({ onBack }: { onBack?: () => void }) {
+  const { t } = useI18n();
   return (
     <div className="relative flex items-center justify-center gap-2 py-[18px]">
       {onBack && (
         <button
           onClick={onBack}
-          aria-label="Back"
+          aria-label={t("common.back")}
           className="absolute left-0 flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-black/5 active:scale-95"
         >
           <ArrowLeft className="text-lg" />
         </button>
       )}
       <Image src="/icon.png" alt="" width={22} height={22} />
-      <span className="text-[12.5px] font-semibold tracking-wide text-muted">Secured by Lunas</span>
+      <span className="text-[12.5px] font-semibold tracking-wide text-muted">{t("common.securedBy")}</span>
     </div>
   );
 }
@@ -56,6 +59,7 @@ function SecuredHeader({ onBack }: { onBack?: () => void }) {
 function CheckoutContent() {
   const params = useSearchParams();
   const router = useRouter();
+  const { t } = useI18n();
   const isDemo = params.get("demo") === "1";
   const isPreview = params.get("preview") === "1";
   const handleBack = isPreview
@@ -69,7 +73,7 @@ function CheckoutContent() {
   const orderId = params.get("orderId") as `0x${string}` | null;
   const checkoutAddress = params.get("checkoutAddress") as `0x${string}` | null;
   const chainId = params.get("chainId");
-  const merchantName = params.get("merchant") || "Your business";
+  const merchantName = params.get("merchant") || t("checkout.defaultBusiness");
   const waTarget = params.get("wa");
 
   const [screen, setScreen] = useState<Screen>("checkout");
@@ -192,7 +196,7 @@ function CheckoutContent() {
           <Storefront className="text-2xl text-muted" />
         </div>
         <p className="mt-1.5 text-[13.5px] text-muted">
-          Paying <span className="font-semibold text-ink">{merchantName}</span>
+          {t("checkout.paying")} <span className="font-semibold text-ink">{merchantName}</span>
         </p>
         <p className="text-[15.5px] font-semibold text-ink">{displayTitle}</p>
         <p className="font-display mt-1 text-[40px] font-extrabold tracking-tight text-ink">
@@ -205,12 +209,12 @@ function CheckoutContent() {
 
       <div className="mt-[18px] flex flex-col items-center gap-3 rounded-[22px] border border-line bg-white p-[26px] shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
         <QRCodeSVG value={isDemo ? "https://lunas.app/demo" : address!} size={200} />
-        <p className="text-center text-[13.5px] text-muted">Scan with your payment app</p>
+        <p className="text-center text-[13.5px] text-muted">{t("checkout.scan")}</p>
         {!isDemo && address && (
           <button
             onClick={async () => {
               await navigator.clipboard.writeText(address);
-              toast("Payment address copied");
+              toast(t("checkout.addressCopied"));
             }}
             className="mt-1 flex items-center gap-2 rounded-full border border-line bg-paper px-4 py-2 text-[12.5px] font-semibold text-ink transition-transform active:scale-95"
           >
@@ -218,9 +222,7 @@ function CheckoutContent() {
             <span className="font-mono">{`${address.slice(0, 6)}…${address.slice(-4)}`}</span>
           </button>
         )}
-        <p className="text-center text-[11.5px] leading-relaxed text-muted">
-          On this phone? Copy the address and paste it into your payment app.
-        </p>
+        <p className="text-center text-[11.5px] leading-relaxed text-muted">{t("checkout.copyHint")}</p>
       </div>
 
       {!isDemo && lastChecked && (
@@ -229,7 +231,7 @@ function CheckoutContent() {
             <span className="absolute inline-flex h-full w-full rounded-full bg-success/60" style={{ animation: "ripple 1.6s ease-out infinite" }} />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
           </span>
-          Listening for payment · updated {agoLabel(lastChecked)}
+          {t("checkout.listening", { ago: agoLabel(lastChecked, t) })}
         </div>
       )}
 
@@ -241,7 +243,7 @@ function CheckoutContent() {
           className="mt-3.5 flex items-center justify-center gap-1.5 text-[12.5px] text-muted transition-colors hover:text-success active:scale-[.98]"
         >
           <WhatsappLogo className="text-base" />
-          Questions? Message {merchantName}
+          {t("checkout.questions", { name: merchantName })}
         </a>
       )}
 
@@ -285,6 +287,7 @@ function ProcessingScreen({
   productPrice: string;
   onBack?: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-in">
       <SecuredHeader onBack={onBack} />
@@ -297,10 +300,10 @@ function ProcessingScreen({
         </div>
         <div>
           <p className="font-display mb-1.5 text-2xl font-extrabold tracking-tight text-ink">
-            Listening for your payment
+            {t("checkout.processingTitle")}
           </p>
           <p className="inline-flex items-center gap-1.5 text-sm text-muted">
-            Usually under ten seconds
+            {t("checkout.processingSub")}
             <span className="flex gap-[3px]">
               <span className="dot-blink h-1 w-1 rounded-full bg-muted" />
               <span className="dot-blink h-1 w-1 rounded-full bg-muted" style={{ animationDelay: ".2s" }} />
@@ -313,7 +316,7 @@ function ProcessingScreen({
           <span className="font-display text-[14.5px] font-bold text-ink">{productPrice} USDC</span>
         </div>
       </div>
-      <p className="text-center text-xs text-muted">Keep this page open — it updates automatically.</p>
+      <p className="text-center text-xs text-muted">{t("checkout.processingKeepOpen")}</p>
     </div>
   );
 }
@@ -331,6 +334,7 @@ function SuccessScreen({
   orderId: string | null;
   waTarget?: string | null;
 }) {
+  const { t } = useI18n();
   const receipt = orderId ? `#LNS-${orderId.slice(2, 6).toUpperCase()}` : "#LNS-4127";
 
   function receiptUrl() {
@@ -352,7 +356,7 @@ function SuccessScreen({
         await navigator.share({ title: "Lunas receipt", text, url });
       } else {
         await navigator.clipboard.writeText(url);
-        toast("Receipt link copied");
+        toast(t("checkout.receiptCopied"));
       }
     } catch {
       // user dismissed the share sheet — nothing to do
@@ -400,18 +404,18 @@ function SuccessScreen({
           </div>
         </div>
         <div className="animate-fade-up" style={{ animationDelay: ".5s" }}>
-          <p className="font-display text-[38px] font-extrabold tracking-tight text-success">Lunas ✓</p>
-          <p className="mt-2 text-[14.5px] text-muted">Paid in full. You&apos;re all set.</p>
+          <p className="font-display text-[38px] font-extrabold tracking-tight text-success">{t("checkout.successTitle")}</p>
+          <p className="mt-2 text-[14.5px] text-muted">{t("checkout.successSub")}</p>
         </div>
         <div
           className="w-full max-w-[320px] rounded-2xl border border-line bg-white p-[22px] shadow-[0_6px_24px_rgba(21,22,27,0.05)] animate-fade-up"
           style={{ animationDelay: ".65s" }}
         >
-          <Row label="Paid to" value={merchantName} />
-          <Row label="For" value={productName} />
-          <Row label="Amount" value={`${productPrice} USDC`} mono />
+          <Row label={t("checkout.paidTo")} value={merchantName} />
+          <Row label={t("checkout.for")} value={productName} />
+          <Row label={t("checkout.amount")} value={`${productPrice} USDC`} mono />
           <div className="mt-1.5 flex justify-between border-t border-dashed border-line pt-2.5 text-[13.5px]">
-            <span className="text-muted">Receipt</span>
+            <span className="text-muted">{t("checkout.receipt")}</span>
             <span className="font-semibold text-primary">{receipt}</span>
           </div>
         </div>
@@ -421,13 +425,13 @@ function SuccessScreen({
           onClick={shareReceipt}
           className="flex h-[52px] items-center justify-center rounded-2xl bg-primary text-[15.5px] font-semibold text-white transition-transform active:scale-[.97]"
         >
-          Share receipt
+          {t("checkout.shareReceipt")}
         </button>
         <a
           href={typeof window !== "undefined" ? receiptUrl() : "#"}
           className="h-11 rounded-xl text-center text-sm font-medium leading-[44px] text-muted transition-colors hover:bg-black/[.04]"
         >
-          View full receipt
+          {t("checkout.viewReceipt")}
         </a>
       </div>
     </div>
@@ -444,6 +448,7 @@ function Row({ label, value, mono }: { label: string; value: string; mono?: bool
 }
 
 function ExpiredScreen({ waTarget, onBack }: { waTarget: string | null; onBack?: () => void }) {
+  const { t } = useI18n();
   return (
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
       <SecuredHeader onBack={onBack} />
@@ -451,11 +456,9 @@ function ExpiredScreen({ waTarget, onBack }: { waTarget: string | null; onBack?:
         <Image src="/link-expired.png" alt="" width={150} height={150} className="animate-float" />
         <div>
           <p className="font-display mb-1.5 text-2xl font-extrabold tracking-tight text-ink">
-            This link has expired
+            {t("checkout.expiredTitle")}
           </p>
-          <p className="max-w-[260px] text-sm leading-relaxed text-muted">
-            Payment links are single-use for your safety. Ask the seller to send a fresh one.
-          </p>
+          <p className="max-w-[260px] text-sm leading-relaxed text-muted">{t("checkout.expiredDesc")}</p>
         </div>
         {waTarget && (
           <a
@@ -465,7 +468,7 @@ function ExpiredScreen({ waTarget, onBack }: { waTarget: string | null; onBack?:
             className="flex h-[46px] items-center gap-2 rounded-[13px] border border-line bg-white px-[22px] text-sm font-semibold text-ink transition-transform active:scale-95"
           >
             <WhatsappLogo weight="fill" className="text-lg text-success" />
-            Message the seller
+            {t("checkout.messageSeller")}
           </a>
         )}
       </div>
@@ -482,6 +485,7 @@ function AlreadyPaidScreen({
   onView: () => void;
   onBack?: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
       <SecuredHeader onBack={onBack} />
@@ -489,17 +493,17 @@ function AlreadyPaidScreen({
         <Image src="/paid-celebrate.png" alt="" width={150} height={150} className="animate-float" />
         <div>
           <p className="font-display mb-1.5 text-2xl font-extrabold tracking-tight text-ink">
-            Already paid — Lunas ✓
+            {t("checkout.alreadyPaidTitle")}
           </p>
           <p className="max-w-[270px] text-sm leading-relaxed text-muted">
-            This order with {merchantName} was already settled. No further payment is needed.
+            {t("checkout.alreadyPaidDesc", { name: merchantName })}
           </p>
         </div>
         <button
           onClick={onView}
           className="flex h-[46px] items-center rounded-[13px] border border-line bg-white px-[22px] text-sm font-semibold text-ink transition-transform active:scale-95"
         >
-          View receipt
+          {t("checkout.viewReceiptShort")}
         </button>
       </div>
     </div>
@@ -519,6 +523,7 @@ function UnderpaidScreen({
   onSendRest: () => void;
   onBack?: () => void;
 }) {
+  const { t } = useI18n();
   const remaining = (Number(productPrice) - Number(receivedAmount)).toFixed(2);
 
   return (
@@ -530,22 +535,21 @@ function UnderpaidScreen({
         </div>
         <div>
           <p className="font-display mb-1.5 text-2xl font-extrabold tracking-tight text-ink">
-            Almost there
+            {t("checkout.almostTitle")}
           </p>
           <p className="max-w-[280px] text-sm leading-relaxed text-muted">
-            We received {receivedAmount} USDC — that&apos;s {remaining} USDC short of the{" "}
-            {productPrice} USDC total. Send the rest to finish.
+            {t("checkout.almostDesc", { received: receivedAmount, remaining, total: productPrice })}
           </p>
         </div>
         <div className="w-full max-w-[320px] rounded-2xl border border-line bg-white p-[22px] shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
-          <Row label="Received" value={`${receivedAmount} USDC`} mono />
-          <Row label="Still needed" value={`${remaining} USDC`} mono />
+          <Row label={t("checkout.received")} value={`${receivedAmount} USDC`} mono />
+          <Row label={t("checkout.stillNeeded")} value={`${remaining} USDC`} mono />
         </div>
         <button
           onClick={onSendRest}
           className="flex h-[46px] items-center rounded-[13px] bg-primary px-[22px] text-sm font-semibold text-white transition-transform active:scale-95"
         >
-          Send the rest
+          {t("checkout.sendRest")}
         </button>
         {waTarget && (
           <a
@@ -555,7 +559,7 @@ function UnderpaidScreen({
             className="flex h-[46px] items-center gap-2 rounded-[13px] border border-line bg-white px-[22px] text-sm font-semibold text-ink transition-transform active:scale-95"
           >
             <WhatsappLogo weight="fill" className="text-lg text-success" />
-            Ask the seller for help
+            {t("checkout.askHelp")}
           </a>
         )}
       </div>
@@ -570,6 +574,7 @@ function UnsupportedTokenScreen({
   onBack: () => void;
   onBackToMerchant?: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
       <SecuredHeader onBack={onBackToMerchant} />
@@ -579,12 +584,9 @@ function UnsupportedTokenScreen({
         </div>
         <div>
           <p className="font-display mb-1.5 text-2xl font-extrabold tracking-tight text-ink">
-            We can&apos;t accept that yet
+            {t("checkout.unsupportedTitle")}
           </p>
-          <p className="max-w-[280px] text-sm leading-relaxed text-muted">
-            That payment method isn&apos;t supported here. Your funds are safe — retrieve them,
-            then pay with a different method.
-          </p>
+          <p className="max-w-[280px] text-sm leading-relaxed text-muted">{t("checkout.unsupportedDesc")}</p>
         </div>
         <a
           href="https://app.zerodev.app/sra"
@@ -592,13 +594,13 @@ function UnsupportedTokenScreen({
           rel="noopener noreferrer"
           className="flex h-[46px] items-center rounded-[13px] bg-primary px-[22px] text-sm font-semibold text-white transition-transform active:scale-95"
         >
-          Retrieve my funds
+          {t("checkout.retrieve")}
         </a>
         <button
           onClick={onBack}
           className="h-11 rounded-xl px-[22px] text-sm font-medium text-muted transition-colors hover:bg-black/[.04]"
         >
-          Try a different method
+          {t("checkout.tryDifferent")}
         </button>
       </div>
     </div>

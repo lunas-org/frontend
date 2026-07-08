@@ -10,9 +10,11 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Camera } from "@phosphor-icons/react/dist/ssr";
 import { saveProfile, markProfileSetupSeen } from "@/lib/store";
+import { useI18n } from "@/lib/i18n";
 
 export default function ProfileSetupPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [name, setName] = useState("");
   const [wa, setWa] = useState("");
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
@@ -50,8 +52,8 @@ export default function ProfileSetupPage() {
       <div className="flex min-h-screen flex-col items-center justify-center gap-5 p-6 text-center animate-fade-in">
         <Image src="/onboarding-finished.png" alt="" width={180} height={180} className="animate-float" />
         <div>
-          <p className="font-display text-[26px] font-extrabold tracking-tight text-ink">You&apos;re all set</p>
-          <p className="mt-2 text-sm leading-relaxed text-muted">Taking you to your dashboard…</p>
+          <p className="font-display text-[26px] font-extrabold tracking-tight text-ink">{t("profile.doneTitle")}</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted">{t("profile.doneSub")}</p>
         </div>
       </div>
     );
@@ -62,12 +64,9 @@ export default function ProfileSetupPage() {
         <div className="flex flex-col items-center gap-1.5 py-6 text-center">
           <Image src="/hello-wave.png" alt="" width={132} height={132} className="animate-float" />
           <h1 className="font-display mt-1 text-[28px] font-extrabold tracking-tight text-ink">
-            Say hi to your buyers
+            {t("profile.title")}
           </h1>
-          <p className="text-[14.5px] leading-relaxed text-muted">
-            A name and photo make your checkout feel personal. Takes ten seconds — you can change
-            it anytime.
-          </p>
+          <p className="text-[14.5px] leading-relaxed text-muted">{t("profile.subtitle")}</p>
         </div>
 
         <div className="flex justify-center py-4">
@@ -82,7 +81,7 @@ export default function ProfileSetupPage() {
             ) : (
               <span className="flex flex-col items-center gap-1 text-primary">
                 <Camera className="text-2xl" />
-                <span className="text-[10.5px] font-semibold">Add photo</span>
+                <span className="text-[10.5px] font-semibold">{t("profile.addPhoto")}</span>
               </span>
             )}
           </button>
@@ -90,26 +89,26 @@ export default function ProfileSetupPage() {
 
         <div className="flex flex-col gap-4 py-2.5">
           <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-ink">Business or display name</label>
+            <label className="text-[13px] font-semibold text-ink">{t("profile.nameLabel")}</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Studio Mira"
+              placeholder={t("profile.namePlaceholder")}
               className="h-[52px] rounded-[13px] border-[1.5px] border-line bg-white px-4 text-[15px] text-ink transition-shadow focus:border-primary focus:shadow-[0_0_0_3px_rgba(47,42,107,0.12)] focus:outline-none"
             />
-            <p className="text-xs text-muted">Buyers will see &quot;Paying {name.trim() || "Your business"}&quot;</p>
+            <p className="text-xs text-muted">{t("profile.nameHint", { name: name.trim() || t("profile.defaultBusiness") })}</p>
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-[13px] font-semibold text-ink">
-              WhatsApp number <span className="font-normal text-muted">· optional</span>
+              {t("profile.waLabel")} <span className="font-normal text-muted">· {t("profile.optional")}</span>
             </label>
             <input
               value={wa}
               onChange={(e) => setWa(e.target.value)}
-              placeholder="+62 812 …"
+              placeholder={t("profile.waPlaceholder")}
               className="h-[52px] rounded-[13px] border-[1.5px] border-line bg-white px-4 text-[15px] text-ink transition-shadow focus:border-primary focus:shadow-[0_0_0_3px_rgba(47,42,107,0.12)] focus:outline-none"
             />
-            <p className="text-xs text-muted">Lets buyers reach you if they have a question.</p>
+            <p className="text-xs text-muted">{t("profile.waHint")}</p>
           </div>
         </div>
 
@@ -121,10 +120,10 @@ export default function ProfileSetupPage() {
             disabled={!name.trim()}
             className="h-[52px] rounded-2xl bg-primary text-[15.5px] font-semibold text-white transition-transform active:scale-[.97] disabled:opacity-45"
           >
-            Continue
+            {t("profile.continue")}
           </button>
           <button onClick={skip} className="h-11 rounded-xl text-sm font-medium text-muted transition-colors hover:bg-black/[.04]">
-            Skip for now
+            {t("profile.skip")}
           </button>
         </div>
     </div>

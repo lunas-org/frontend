@@ -12,6 +12,7 @@ import Image from "next/image";
 import { CheckCircle, Tag } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn } from "@/lib/magic";
 import { listOrders, listProducts, type Product } from "@/lib/store";
+import { useI18n } from "@/lib/i18n";
 
 type Feed = {
   id: string;
@@ -37,6 +38,7 @@ function relativeTime(ms: number) {
 
 export default function NotificationsPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [feed, setFeed] = useState<Feed[]>([]);
   const [ready, setReady] = useState(false);
   const ranRef = useRef(false);
@@ -87,18 +89,16 @@ export default function NotificationsPage() {
   return (
     <div className="min-h-screen px-6 pb-[92px] animate-fade-up">
       <div className="flex items-baseline justify-between py-5">
-        <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">Activity</h1>
-        {feed.length > 0 && <span className="text-[12.5px] text-muted">{feed.length} events</span>}
+        <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">{t("activity.title")}</h1>
+        {feed.length > 0 && <span className="text-[12.5px] text-muted">{t("activity.events", { count: feed.length })}</span>}
       </div>
 
       {ready && feed.length === 0 && (
         <div className="flex flex-col items-center gap-3.5 rounded-[20px] border border-dashed border-line bg-white px-6 py-11 text-center">
           <Image src="/empty-notification.png" alt="" width={128} height={128} className="animate-float" />
           <div>
-            <p className="font-display mb-1 text-base font-bold text-ink">Nothing yet</p>
-            <p className="max-w-[240px] text-[13px] leading-relaxed text-muted">
-              When a buyer pays, you&apos;ll see the Lunas&nbsp;✓ land right here.
-            </p>
+            <p className="font-display mb-1 text-base font-bold text-ink">{t("activity.emptyTitle")}</p>
+            <p className="max-w-[240px] text-[13px] leading-relaxed text-muted">{t("activity.emptyDesc")}</p>
           </div>
         </div>
       )}
@@ -117,7 +117,9 @@ export default function NotificationsPage() {
                 <Icon weight={paid ? "fill" : "regular"} className={`text-[18px] ${paid ? "text-success" : "text-primary"}`} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-ink">{f.title}</p>
+                <p className="truncate text-sm font-semibold text-ink">
+                  {t(paid ? "activity.paidTitle" : "activity.createdTitle")}
+                </p>
                 <p className="mt-0.5 truncate text-xs text-muted">
                   {f.subtitle} · {relativeTime(f.ts)}
                 </p>

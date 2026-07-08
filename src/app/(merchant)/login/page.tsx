@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import { loginWithGoogle } from "@/lib/magic";
+import { useI18n } from "@/lib/i18n";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 function GoogleIcon() {
   return (
@@ -22,6 +24,7 @@ function GoogleIcon() {
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -39,29 +42,30 @@ export default function LoginPage() {
 
   return (
       <div className="flex min-h-screen flex-col animate-fade-up">
-        <div className="p-3.5">
+        <div className="flex items-center justify-between p-3.5">
           <button
             onClick={() => router.push("/")}
             className="flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-black/5 active:scale-[.94]"
-            aria-label="Back"
+            aria-label={t("common.back")}
           >
             <ArrowLeft className="text-xl text-ink" />
           </button>
+          <LanguageToggle />
         </div>
 
         <div className="flex flex-1 flex-col items-center justify-center gap-6 px-7 pb-20 text-center">
           <Image src="/icon.png" alt="Lunas" width={72} height={72} />
           <div>
             <h1 className="font-display mb-2 text-[30px] font-extrabold tracking-tight text-ink">
-              Welcome to Lunas
+              {t("login.welcome")}
             </h1>
-            <p className="text-[14.5px] leading-relaxed text-muted">Sign in to start getting paid.</p>
+            <p className="text-[14.5px] leading-relaxed text-muted">{t("login.subtitle")}</p>
           </div>
 
           {loading ? (
             <div className="flex h-[54px] items-center gap-2.5 text-sm text-muted">
               <Image src="/icon.png" alt="" width={26} height={26} className="animate-breathe" style={{ animationDuration: "1s" }} />
-              Signing you in
+              {t("login.signingIn")}
               <span className="flex gap-[3px]">
                 <span className="dot-blink h-1 w-1 rounded-full bg-muted" />
                 <span className="dot-blink h-1 w-1 rounded-full bg-muted" style={{ animationDelay: ".2s" }} />
@@ -74,15 +78,13 @@ export default function LoginPage() {
               className="flex h-[54px] w-full max-w-[320px] items-center justify-center gap-3 rounded-2xl border border-line bg-white text-[15.5px] font-semibold text-ink shadow-[0_2px_8px_rgba(21,22,27,0.05)] transition-transform active:scale-[.97]"
             >
               <GoogleIcon />
-              Continue with Google
+              {t("login.google")}
             </button>
           )}
 
           {error && <p className="text-sm text-danger">{error}</p>}
 
-          <p className="max-w-[280px] text-xs leading-relaxed text-muted">
-            By continuing you agree to our Terms of Service and Privacy Policy.
-          </p>
+          <p className="max-w-[280px] text-xs leading-relaxed text-muted">{t("login.terms")}</p>
         </div>
       </div>
   );

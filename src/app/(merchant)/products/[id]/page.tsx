@@ -11,10 +11,12 @@ import { getProduct, getOrdersForProduct, getProfile, type Product, type Order }
 import { CalmLoader } from "@/components/CalmLoader";
 import { toast } from "@/components/Toast";
 import { idrEstimate } from "@/lib/format";
+import { useI18n } from "@/lib/i18n";
 
 export default function ProductDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useI18n();
   const [product, setProduct] = useState<Product | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
@@ -50,14 +52,14 @@ export default function ProductDetailPage() {
     if (!checkoutUrl) return;
     await navigator.clipboard.writeText(checkoutUrl);
     setCopied(true);
-    toast("Payment link copied");
+    toast(t("toast.linkCopied"));
     setTimeout(() => setCopied(false), 1800);
   }
 
   if (!product || !checkoutUrl) {
     return (
       <div className="flex min-h-screen items-center justify-center p-8">
-        <CalmLoader label="Loading..." />
+        <CalmLoader label={t("common.loading")} />
       </div>
     );
   }
@@ -91,13 +93,13 @@ export default function ProductDetailPage() {
           </div>
           <div className="flex items-center gap-1.5 rounded-full bg-success/10 px-3 py-1.5 text-[12.5px] font-semibold text-success">
             <CheckCircle weight="fill" className="text-[15px]" />
-            {paidCount} paid
+            {t("detail.paid", { count: paidCount })}
           </div>
         </div>
 
         <div className="flex flex-col items-center gap-3.5 rounded-[22px] border border-line bg-white p-6 shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
           <QRCodeSVG value={checkoutUrl} size={210} />
-          <p className="text-center text-[13px] text-muted">Buyers scan this to pay instantly</p>
+          <p className="text-center text-[13px] text-muted">{t("detail.scan")}</p>
         </div>
 
         <div className="mt-4 flex gap-2.5">
@@ -108,7 +110,7 @@ export default function ProductDetailPage() {
             }`}
           >
             {copied ? <CheckCircle weight="fill" className="text-lg" /> : <LinkIcon className="text-lg" />}
-            {copied ? "Copied" : "Copy link"}
+            {copied ? t("detail.copied") : t("detail.copyLink")}
           </button>
           <a
             href={`https://wa.me/?text=${whatsappText}`}
@@ -117,7 +119,7 @@ export default function ProductDetailPage() {
             className="flex h-[50px] flex-1 items-center justify-center gap-2 rounded-[13px] bg-success text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
           >
             <WhatsappLogo weight="fill" className="text-lg" />
-            WhatsApp
+            {t("detail.whatsapp")}
           </a>
         </div>
 
@@ -137,7 +139,7 @@ export default function ProductDetailPage() {
           className="flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-semibold text-muted transition-colors hover:bg-black/[.04] hover:text-ink"
         >
           <Eye className="text-lg" />
-          Preview as buyer
+          {t("detail.preview")}
         </button>
       </div>
   );

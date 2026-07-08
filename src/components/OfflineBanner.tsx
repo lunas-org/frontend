@@ -6,8 +6,10 @@
 
 import { useEffect, useState } from "react";
 import { WifiSlash } from "@phosphor-icons/react/dist/ssr";
+import { useI18n } from "@/lib/i18n";
 
 export function OfflineBanner() {
+  const { t } = useI18n();
   const [offline, setOffline] = useState(false);
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export function OfflineBanner() {
         style={{ paddingTop: "calc(8px + env(safe-area-inset-top))" }}
       >
         <WifiSlash weight="bold" className="text-[15px]" />
-        You&apos;re offline — we&apos;ll reconnect automatically
+        {t("offline.message")}
       </div>
     </div>
   );

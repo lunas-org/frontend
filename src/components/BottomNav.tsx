@@ -4,20 +4,22 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { House, Package, Bell, GearSix } from "@phosphor-icons/react/dist/ssr";
+import { useI18n } from "@/lib/i18n";
 
 const ITEMS = [
-  { key: "home", href: "/dashboard", label: "Home", icon: House },
-  { key: "products", href: "/products", label: "Products", icon: Package },
-  { key: "notifications", href: "/notifications", label: "Activity", icon: Bell },
-  { key: "settings", href: "/settings", label: "Settings", icon: GearSix },
+  { key: "home", href: "/dashboard", labelKey: "nav.home", icon: House },
+  { key: "products", href: "/products", labelKey: "nav.products", icon: Package },
+  { key: "notifications", href: "/notifications", labelKey: "nav.activity", icon: Bell },
+  { key: "settings", href: "/settings", labelKey: "nav.settings", icon: GearSix },
 ] as const;
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { t } = useI18n();
 
   return (
     <div className="absolute bottom-0 left-0 right-0 flex border-t border-line bg-paper/90 px-3 pb-[calc(10px+env(safe-area-inset-bottom))] pt-2 backdrop-blur-md">
-      {ITEMS.map(({ key, href, label, icon: Icon }) => {
+      {ITEMS.map(({ key, href, labelKey, icon: Icon }) => {
         const isActive = pathname === href;
         return (
           <Link
@@ -35,7 +37,7 @@ export function BottomNav() {
               />
             )}
             <Icon weight={isActive ? "fill" : "regular"} className="text-[22px]" />
-            <span className={`text-[10.5px] ${isActive ? "font-semibold" : "font-medium"}`}>{label}</span>
+            <span className={`text-[10.5px] ${isActive ? "font-semibold" : "font-medium"}`}>{t(labelKey)}</span>
           </Link>
         );
       })}

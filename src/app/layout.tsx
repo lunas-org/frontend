@@ -4,6 +4,7 @@ import "./globals.css";
 import { DevHud } from "@/components/DevHud";
 import { Toaster } from "@/components/Toast";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { I18nProvider } from "@/lib/i18n";
 
 // Display font (amounts, headlines) + body font, per CLAUDE.md §9's design system.
 // Self-hosted (not next/font/google) so `pnpm dev` never depends on reaching
@@ -61,10 +62,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${hankenGrotesk.variable} ${inter.variable} antialiased`}>
-        {children}
-        <OfflineBanner />
-        <Toaster />
-        <DevHud />
+        <I18nProvider>
+          {children}
+          <OfflineBanner />
+          <Toaster />
+          <DevHud />
+        </I18nProvider>
       </body>
     </html>
   );

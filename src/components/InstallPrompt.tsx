@@ -9,12 +9,14 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { X, DownloadSimple } from "@phosphor-icons/react/dist/ssr";
+import { useI18n } from "@/lib/i18n";
 
 const DISMISS_KEY = "lunas:install-dismissed";
 
 type BIPEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 
 export function InstallPrompt() {
+  const { t } = useI18n();
   const [deferred, setDeferred] = useState<BIPEvent | null>(null);
   const [show, setShow] = useState(false);
 
@@ -51,15 +53,15 @@ export function InstallPrompt() {
       >
         <Image src="/icon.png" alt="" width={36} height={36} className="flex-none" />
         <div className="min-w-0 flex-1">
-          <p className="text-[13.5px] font-semibold text-ink">Add Lunas to your home screen</p>
-          <p className="text-[12px] text-muted">Open it like an app, one tap away.</p>
+          <p className="text-[13.5px] font-semibold text-ink">{t("install.title")}</p>
+          <p className="text-[12px] text-muted">{t("install.desc")}</p>
         </div>
         <button
           onClick={install}
           className="flex h-9 flex-none items-center gap-1.5 rounded-xl bg-primary px-3.5 text-[13px] font-semibold text-white transition-transform active:scale-95"
         >
           <DownloadSimple weight="bold" className="text-[15px]" />
-          Add
+          {t("install.add")}
         </button>
         <button
           onClick={dismiss}

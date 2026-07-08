@@ -6,11 +6,13 @@ import { handleOAuthRedirect, getMagicProvider } from "@/lib/magic";
 import { createSmartAccountFromProvider } from "@/lib/zerodev";
 import { hasSeenProfileSetup } from "@/lib/store";
 import { CalmLoader } from "@/components/CalmLoader";
+import { useI18n } from "@/lib/i18n";
 
 type Status = "loading" | "error";
 
 export default function LoginCallbackPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [status, setStatus] = useState<Status>("loading");
   const [error, setError] = useState<string | null>(null);
 
@@ -40,8 +42,8 @@ export default function LoginCallbackPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
-      {status === "loading" && <CalmLoader label="Setting up your account..." />}
-      {status === "error" && <p className="text-sm text-red-600">Something went wrong: {error}</p>}
+      {status === "loading" && <CalmLoader label={t("login.settingUp")} />}
+      {status === "error" && <p className="text-sm text-red-600">{t("login.wentWrong")}: {error}</p>}
     </main>
   );
 }
