@@ -9,6 +9,8 @@ import { QRCodeSVG } from "qrcode.react";
 import { ArrowLeft, CheckCircle, Link as LinkIcon, WhatsappLogo, Eye } from "@phosphor-icons/react/dist/ssr";
 import { getProduct, getOrdersForProduct, getProfile, type Product, type Order } from "@/lib/store";
 import { CalmLoader } from "@/components/CalmLoader";
+import { toast } from "@/components/Toast";
+import { idrEstimate } from "@/lib/format";
 
 export default function ProductDetailPage() {
   const params = useParams<{ id: string }>();
@@ -48,6 +50,7 @@ export default function ProductDetailPage() {
     if (!checkoutUrl) return;
     await navigator.clipboard.writeText(checkoutUrl);
     setCopied(true);
+    toast("Payment link copied");
     setTimeout(() => setCopied(false), 1800);
   }
 
@@ -78,9 +81,14 @@ export default function ProductDetailPage() {
         </div>
 
         <div className="flex items-center gap-4 py-1 pb-[18px]">
-          <p className="font-display text-[26px] font-extrabold text-ink">
-            {product.priceUsd} <span className="text-sm font-semibold text-muted">USDC</span>
-          </p>
+          <div>
+            <p className="font-display text-[26px] font-extrabold text-ink">
+              {product.priceUsd} <span className="text-sm font-semibold text-muted">USDC</span>
+            </p>
+            {idrEstimate(product.priceUsd) && (
+              <p className="text-[12.5px] font-medium text-muted">{idrEstimate(product.priceUsd)}</p>
+            )}
+          </div>
           <div className="flex items-center gap-1.5 rounded-full bg-success/10 px-3 py-1.5 text-[12.5px] font-semibold text-success">
             <CheckCircle weight="fill" className="text-[15px]" />
             {paidCount} paid

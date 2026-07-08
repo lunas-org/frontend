@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { Camera, Tag, CaretRight, SignOut } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn, logout } from "@/lib/magic";
 import { listProducts, listOrders, getProfile, saveProfile, type Product } from "@/lib/store";
+import { toast } from "@/components/Toast";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -49,6 +50,7 @@ export default function SettingsPage() {
   function persist(patch: Partial<{ displayName: string; waNumber: string; avatarDataUrl: string }>) {
     const current = getProfile() ?? { displayName: "" };
     saveProfile({ ...current, ...patch });
+    toast("Profile updated");
   }
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {

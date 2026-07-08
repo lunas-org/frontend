@@ -16,9 +16,11 @@ import { QRCodeSVG } from "qrcode.react";
 import Image from "next/image";
 import { createPublicClient, http } from "viem";
 import { arbitrum, arbitrumSepolia } from "viem/chains";
-import { Storefront, WhatsappLogo, ArrowLeft } from "@phosphor-icons/react/dist/ssr";
+import { Storefront, WhatsappLogo, ArrowLeft, Copy } from "@phosphor-icons/react/dist/ssr";
 import { checkoutAbi } from "@/lib/checkoutAbi";
 import { Frame } from "@/components/Frame";
+import { toast } from "@/components/Toast";
+import { idrEstimate } from "@/lib/format";
 
 const POLL_INTERVAL_MS = 4000;
 
@@ -179,11 +181,29 @@ function CheckoutContent() {
         <p className="font-display mt-1 text-[40px] font-extrabold tracking-tight text-ink">
           {displayPrice} <span className="text-[17px] font-semibold text-muted">USDC</span>
         </p>
+        {idrEstimate(displayPrice) && (
+          <p className="-mt-0.5 text-[13px] font-medium text-muted">{idrEstimate(displayPrice)}</p>
+        )}
       </div>
 
       <div className="mt-[18px] flex flex-col items-center gap-3 rounded-[22px] border border-line bg-white p-[26px] shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
         <QRCodeSVG value={isDemo ? "https://lunas.app/demo" : address!} size={200} />
         <p className="text-center text-[13.5px] text-muted">Scan with your payment app</p>
+        {!isDemo && address && (
+          <button
+            onClick={async () => {
+              await navigator.clipboard.writeText(address);
+              toast("Payment address copied");
+            }}
+            className="mt-1 flex items-center gap-2 rounded-full border border-line bg-paper px-4 py-2 text-[12.5px] font-semibold text-ink transition-transform active:scale-95"
+          >
+            <Copy className="text-[15px] text-primary" />
+            <span className="font-mono">{`${address.slice(0, 6)}…${address.slice(-4)}`}</span>
+          </button>
+        )}
+        <p className="text-center text-[11.5px] leading-relaxed text-muted">
+          On this phone? Copy the address and paste it into your payment app.
+        </p>
       </div>
 
       {waTarget && (

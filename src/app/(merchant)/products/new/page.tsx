@@ -14,6 +14,7 @@ import { isLoggedIn, getMagicProvider } from "@/lib/magic";
 import { createSmartAccountFromProvider, createProductPaymentAddress, generateOrderId } from "@/lib/zerodev";
 import { saveProduct, saveOrder, getProfile } from "@/lib/store";
 import { CalmLoader } from "@/components/CalmLoader";
+import { idrEstimate } from "@/lib/format";
 
 type Status = "checking" | "form" | "creating" | "error";
 
@@ -186,9 +187,14 @@ export default function NewProductPage() {
               <p className="text-xs text-muted">Paying {displayName}</p>
               <p className="mt-0.5 truncate text-[15px] font-semibold text-ink">{title.trim() || "Your product"}</p>
             </div>
-            <p className="font-display whitespace-nowrap text-lg font-extrabold text-ink">
-              {(price > 0 ? price.toFixed(2) : "0.00")}
-            </p>
+            <div className="text-right">
+              <p className="font-display whitespace-nowrap text-lg font-extrabold text-ink">
+                {(price > 0 ? price.toFixed(2) : "0.00")} <span className="text-[11px] font-semibold text-muted">USDC</span>
+              </p>
+              {idrEstimate(price) && (
+                <p className="whitespace-nowrap text-[11px] font-medium text-muted">{idrEstimate(price)}</p>
+              )}
+            </div>
           </div>
         </div>
 

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { DevHud } from "@/components/DevHud";
+import { Toaster } from "@/components/Toast";
 
 // Display font (amounts, headlines) + body font, per CLAUDE.md §9's design system.
 // Self-hosted (not next/font/google) so `pnpm dev` never depends on reaching
@@ -60,6 +61,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${hankenGrotesk.variable} ${inter.variable} antialiased`}>
         {children}
+        <Toaster />
         <DevHud />
       </body>
     </html>
