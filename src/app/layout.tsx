@@ -22,6 +22,25 @@ export const metadata: Metadata = {
   title: "Lunas",
   description: "Get paid from anywhere. Lunas.",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-touch-icon.png",
+  },
+  // Link previews (WhatsApp / social) — the product lives on shared links, so these matter.
+  // Drop public/og-image.png (1200×630, see ASSET-PLAN.md) and previews light up automatically.
+  openGraph: {
+    title: "Lunas",
+    description: "Get paid from anywhere. The status flips to Lunas ✓ the moment it's done.",
+    images: ["/og-image.png"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lunas",
+    description: "Get paid from anywhere. The status flips to Lunas ✓ the moment it's done.",
+    images: ["/og-image.png"],
+  },
+  appleWebApp: { capable: true, title: "Lunas", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {

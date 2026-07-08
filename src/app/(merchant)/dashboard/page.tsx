@@ -163,12 +163,8 @@ export default function MerchantDashboardPage() {
 
               {orders.length === 0 ? (
                 <div className="flex flex-col items-center gap-3.5 rounded-[20px] border border-dashed border-line bg-white px-6 py-9 text-center">
-                  <div className="relative h-24 w-24">
-                    <div className="absolute inset-0 rounded-full border-[1.5px] border-dashed border-primary/25" />
-                    <div className="absolute inset-3.5 flex items-center justify-center rounded-full bg-primary/5">
-                      <Image src="/icon.png" alt="" width={44} height={44} className="animate-float opacity-90" />
-                    </div>
-                  </div>
+                  <Image src="/empty-orders.png" alt="" width={128} height={128} className="animate-float" />
+
                   <div>
                     <p className="font-display mb-1 text-base font-bold text-ink">No orders yet</p>
                     <p className="max-w-[230px] text-[13px] leading-relaxed text-muted">

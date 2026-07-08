@@ -16,7 +16,7 @@ import { QRCodeSVG } from "qrcode.react";
 import Image from "next/image";
 import { createPublicClient, http } from "viem";
 import { arbitrum, arbitrumSepolia } from "viem/chains";
-import { Storefront, WhatsappLogo, CheckCircle } from "@phosphor-icons/react/dist/ssr";
+import { Storefront, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 import { checkoutAbi } from "@/lib/checkoutAbi";
 import { Frame } from "@/components/Frame";
 
@@ -301,12 +301,7 @@ function ExpiredScreen({ waTarget }: { waTarget: string | null }) {
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
       <SecuredHeader />
       <div className="flex flex-1 flex-col items-center justify-center gap-[18px] text-center">
-        <div className="relative h-[110px] w-[110px]">
-          <div className="absolute inset-0 rounded-full border-[1.5px] border-dashed border-black/[.16]" />
-          <div className="absolute inset-3.5 flex items-center justify-center rounded-full border border-line bg-white">
-            <Image src="/icon.png" alt="" width={44} height={44} className="opacity-55 grayscale" />
-          </div>
-        </div>
+        <Image src="/link-expired.png" alt="" width={150} height={150} className="animate-float" />
         <div>
           <p className="font-display mb-1.5 text-2xl font-extrabold tracking-tight text-ink">
             This link has expired
@@ -336,9 +331,7 @@ function AlreadyPaidScreen({ merchantName, onView }: { merchantName: string; onV
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
       <SecuredHeader />
       <div className="flex flex-1 flex-col items-center justify-center gap-[18px] text-center">
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-success/10">
-          <CheckCircle weight="fill" className="text-[46px] text-success" />
-        </div>
+        <Image src="/paid-celebrate.png" alt="" width={150} height={150} className="animate-float" />
         <div>
           <p className="font-display mb-1.5 text-2xl font-extrabold tracking-tight text-ink">
             Already paid — Lunas ✓

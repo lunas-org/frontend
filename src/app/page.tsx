@@ -34,8 +34,8 @@ export default function Home() {
           </Link>
         </header>
 
-        <div className="flex flex-col items-center gap-5 px-6 pb-11 pt-[52px] text-center">
-          <Image src="/icon.png" alt="" width={84} height={84} className="animate-float" />
+        <div className="flex flex-col items-center gap-5 px-6 pb-11 pt-[44px] text-center">
+          <Image src="/hero.png" alt="" width={340} height={227} priority className="animate-float" />
           <h1 className="font-display max-w-xs text-[42px] font-extrabold leading-[1.05] tracking-tight text-ink">
             Get paid from anywhere.
           </h1>
