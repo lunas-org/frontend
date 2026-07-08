@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { Frame } from "@/components/Frame";
 import { BottomNav } from "@/components/BottomNav";
+import { InstallPrompt } from "@/components/InstallPrompt";
 
 const TAB_PATHS = ["/dashboard", "/products", "/notifications", "/settings"];
 
@@ -26,6 +27,7 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
       >
         {children}
       </motion.div>
+      {showNav && <InstallPrompt />}
       {showNav && <BottomNav />}
     </Frame>
   );

@@ -30,6 +30,11 @@ function chainById(chainId: number) {
   return chainId === arbitrum.id ? arbitrum : arbitrumSepolia;
 }
 
+function agoLabel(ts: number) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  return s < 2 ? "just now" : `${s}s ago`;
+}
+
 function SecuredHeader({ onBack }: { onBack?: () => void }) {
   return (
     <div className="relative flex items-center justify-center gap-2 py-[18px]">
@@ -68,6 +73,8 @@ function CheckoutContent() {
   const waTarget = params.get("wa");
 
   const [screen, setScreen] = useState<Screen>("checkout");
+  const [lastChecked, setLastChecked] = useState<number | null>(null);
+  const [, setTick] = useState(0);
   const checkedInitialRef = useRef(false);
 
   const missingRealParams = !isDemo && (!title || !priceUsd || !address);
@@ -96,6 +103,8 @@ function CheckoutContent() {
         checkedInitialRef.current = true;
       } catch {
         // transient RPC errors are fine — just retry on the next tick
+      } finally {
+        if (!cancelled) setLastChecked(Date.now());
       }
     }
 
@@ -106,6 +115,13 @@ function CheckoutContent() {
       clearInterval(interval);
     };
   }, [isDemo, missingRealParams, orderId, checkoutAddress, chainId]);
+
+  // Re-render once a second so the "updated Xs ago" liveness label counts up between polls.
+  useEffect(() => {
+    if (isDemo || missingRealParams) return;
+    const t = setInterval(() => setTick((n) => n + 1), 1000);
+    return () => clearInterval(t);
+  }, [isDemo, missingRealParams]);
 
   // Demo flow: "simulate a payment" walks through processing -> success on a timer, matching
   // the mockup exactly, so a live demo never depends on real routing latency.
@@ -205,6 +221,16 @@ function CheckoutContent() {
           On this phone? Copy the address and paste it into your payment app.
         </p>
       </div>
+
+      {!isDemo && lastChecked && (
+        <div className="mt-3 flex items-center justify-center gap-2 text-[12px] text-muted">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-success/60" style={{ animation: "ripple 1.6s ease-out infinite" }} />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
+          </span>
+          Listening for payment · updated {agoLabel(lastChecked)}
+        </div>
+      )}
 
       {waTarget && (
         <a
