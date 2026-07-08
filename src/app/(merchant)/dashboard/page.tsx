@@ -91,8 +91,12 @@ export default function MerchantDashboardPage() {
 
   if (status === "error") {
     return (
-      <div className="flex min-h-screen items-center justify-center p-8 text-center">
-        <p className="text-sm text-danger">Something went wrong: {error}</p>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
+        <Image src="/network-error.png" alt="" width={150} height={150} className="animate-float" />
+        <div>
+          <p className="font-display text-xl font-extrabold tracking-tight text-ink">Something got disconnected</p>
+          <p className="mt-1.5 max-w-[260px] text-sm leading-relaxed text-muted">{error}</p>
+        </div>
       </div>
     );
   }

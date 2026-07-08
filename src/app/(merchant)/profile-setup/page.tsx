@@ -16,6 +16,7 @@ export default function ProfileSetupPage() {
   const [name, setName] = useState("");
   const [wa, setWa] = useState("");
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
+  const [done, setDone] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   function handleAvatarClick() {
@@ -33,12 +34,27 @@ export default function ProfileSetupPage() {
   function finish() {
     saveProfile({ displayName: name.trim(), avatarDataUrl: avatar, waNumber: wa.trim() || undefined });
     markProfileSetupSeen();
-    router.replace("/dashboard");
+    // Brief "you're set" beat before dropping into the dashboard, so the setup feels finished
+    // rather than abrupt.
+    setDone(true);
+    setTimeout(() => router.replace("/dashboard"), 1500);
   }
 
   function skip() {
     markProfileSetupSeen();
     router.replace("/dashboard");
+  }
+
+  if (done) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-5 p-6 text-center animate-fade-in">
+        <Image src="/onboarding-finished.png" alt="" width={180} height={180} className="animate-float" />
+        <div>
+          <p className="font-display text-[26px] font-extrabold tracking-tight text-ink">You&apos;re all set</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted">Taking you to your dashboard…</p>
+        </div>
+      </div>
+    );
   }
 
   return (

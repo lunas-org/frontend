@@ -7,6 +7,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Tag, CaretRight, Plus } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn } from "@/lib/magic";
 import { listProducts, listOrders, type Product } from "@/lib/store";
@@ -62,6 +63,7 @@ export default function ProductsListPage() {
 
         {ready && products.length === 0 && (
           <div className="flex flex-col items-center gap-3.5 rounded-[20px] border border-dashed border-line bg-white px-6 py-9 text-center">
+            <Image src="/empty-products.png" alt="" width={128} height={128} className="animate-float" />
             <p className="font-display text-base font-bold text-ink">No products yet</p>
             <p className="max-w-[230px] text-[13px] leading-relaxed text-muted">
               Create a product to get a payment link and QR you can share.

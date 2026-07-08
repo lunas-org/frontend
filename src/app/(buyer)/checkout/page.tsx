@@ -246,9 +246,7 @@ function ProcessingScreen({
           <span className="absolute inset-0 rounded-full bg-primary/10" style={{ animation: "ripple 2s ease-out infinite" }} />
           <span className="absolute inset-0 rounded-full bg-primary/10" style={{ animation: "ripple 2s ease-out .7s infinite" }} />
           <span className="absolute inset-0 rounded-full bg-primary/10" style={{ animation: "ripple 2s ease-out 1.4s infinite" }} />
-          <div className="animate-breathe flex h-[104px] w-[104px] items-center justify-center rounded-full border border-line bg-white shadow-[0_10px_30px_rgba(47,42,107,0.14)]">
-            <Image src="/icon.png" alt="" width={56} height={56} />
-          </div>
+          <Image src="/payment-processing.png" alt="" width={150} height={150} className="animate-breathe" />
         </div>
         <div>
           <p className="font-display mb-1.5 text-2xl font-extrabold tracking-tight text-ink">
