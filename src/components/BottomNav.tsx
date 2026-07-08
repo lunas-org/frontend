@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { House, Package, GearSix } from "@phosphor-icons/react/dist/ssr";
+import { House, Package, Bell, GearSix } from "@phosphor-icons/react/dist/ssr";
 
 const ITEMS = [
   { key: "home", href: "/dashboard", label: "Home", icon: House },
   { key: "products", href: "/products", label: "Products", icon: Package },
+  { key: "notifications", href: "/notifications", label: "Activity", icon: Bell },
   { key: "settings", href: "/settings", label: "Settings", icon: GearSix },
 ] as const;
 

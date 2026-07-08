@@ -10,7 +10,7 @@ import { usePathname } from "next/navigation";
 import { Frame } from "@/components/Frame";
 import { BottomNav } from "@/components/BottomNav";
 
-const TAB_PATHS = ["/dashboard", "/products", "/settings"];
+const TAB_PATHS = ["/dashboard", "/products", "/notifications", "/settings"];
 
 export default function MerchantLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
