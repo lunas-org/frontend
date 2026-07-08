@@ -284,6 +284,19 @@ function SuccessScreen({
 }) {
   const receipt = orderId ? `#LNS-${orderId.slice(2, 6).toUpperCase()}` : "#LNS-4127";
 
+  async function shareReceipt() {
+    const text = `Lunas ✓ — paid ${productPrice} USDC to ${merchantName} for "${productName}". Receipt ${receipt}.`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Lunas receipt", text });
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+    } catch {
+      // user dismissed the share sheet — nothing to do
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-in">
       <div className="flex flex-1 flex-col items-center justify-center gap-[22px] pt-[26px] text-center">
@@ -348,7 +361,10 @@ function SuccessScreen({
         >
           Done
         </a>
-        <button className="h-11 rounded-xl text-sm font-medium text-muted transition-colors hover:bg-black/[.04]">
+        <button
+          onClick={shareReceipt}
+          className="h-11 rounded-xl text-sm font-medium text-muted transition-colors hover:bg-black/[.04]"
+        >
           Share receipt
         </button>
       </div>

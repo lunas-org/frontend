@@ -32,6 +32,16 @@ body {
   }
 }
 
+/* Keyboard focus ring — only shows for keyboard users (:focus-visible), never on mouse/touch,
+   so it adds a11y without disturbing the mouse-driven look. Inputs keep their own focus styles. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+}
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
