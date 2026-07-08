@@ -179,6 +179,7 @@ function CheckoutContent() {
         productName={displayTitle}
         productPrice={displayPrice}
         orderId={orderId}
+        waTarget={waTarget}
       />
     );
   }
@@ -322,21 +323,36 @@ function SuccessScreen({
   productName,
   productPrice,
   orderId,
+  waTarget,
 }: {
   merchantName: string;
   productName: string;
   productPrice: string;
   orderId: string | null;
+  waTarget?: string | null;
 }) {
   const receipt = orderId ? `#LNS-${orderId.slice(2, 6).toUpperCase()}` : "#LNS-4127";
 
+  function receiptUrl() {
+    const url = new URL("/receipt", window.location.origin);
+    url.searchParams.set("merchant", merchantName);
+    url.searchParams.set("title", productName);
+    url.searchParams.set("price", productPrice);
+    if (orderId) url.searchParams.set("orderId", orderId);
+    if (waTarget) url.searchParams.set("wa", waTarget);
+    url.searchParams.set("ts", String(Date.now()));
+    return url.toString();
+  }
+
   async function shareReceipt() {
+    const url = receiptUrl();
     const text = `Lunas ✓ — paid ${productPrice} USDC to ${merchantName} for "${productName}". Receipt ${receipt}.`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: "Lunas receipt", text });
+        await navigator.share({ title: "Lunas receipt", text, url });
       } else {
-        await navigator.clipboard.writeText(text);
+        await navigator.clipboard.writeText(url);
+        toast("Receipt link copied");
       }
     } catch {
       // user dismissed the share sheet — nothing to do
@@ -401,18 +417,18 @@ function SuccessScreen({
         </div>
       </div>
       <div className="flex flex-col gap-2.5 animate-fade-up" style={{ animationDelay: ".8s" }}>
-        <a
-          href="/dashboard"
-          className="flex h-[52px] items-center justify-center rounded-2xl bg-primary text-[15.5px] font-semibold text-white transition-transform active:scale-[.97]"
-        >
-          Done
-        </a>
         <button
           onClick={shareReceipt}
-          className="h-11 rounded-xl text-sm font-medium text-muted transition-colors hover:bg-black/[.04]"
+          className="flex h-[52px] items-center justify-center rounded-2xl bg-primary text-[15.5px] font-semibold text-white transition-transform active:scale-[.97]"
         >
           Share receipt
         </button>
+        <a
+          href={typeof window !== "undefined" ? receiptUrl() : "#"}
+          className="h-11 rounded-xl text-center text-sm font-medium leading-[44px] text-muted transition-colors hover:bg-black/[.04]"
+        >
+          View full receipt
+        </a>
       </div>
     </div>
   );
