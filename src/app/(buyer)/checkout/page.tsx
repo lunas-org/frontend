@@ -11,26 +11,35 @@
 // CLAUDE.md §10 W6's "demo-mode... as live-demo insurance", not a second real payment path.
 
 import { Suspense, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import Image from "next/image";
 import { createPublicClient, http } from "viem";
 import { arbitrum, arbitrumSepolia } from "viem/chains";
-import { Storefront, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
+import { Storefront, WhatsappLogo, ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import { checkoutAbi } from "@/lib/checkoutAbi";
 import { Frame } from "@/components/Frame";
 
 const POLL_INTERVAL_MS = 4000;
 
-type Screen = "checkout" | "processing" | "success" | "errExpired" | "errPaid";
+type Screen = "checkout" | "processing" | "success" | "errExpired" | "errPaid" | "underpaid" | "unsupportedToken";
 
 function chainById(chainId: number) {
   return chainId === arbitrum.id ? arbitrum : arbitrumSepolia;
 }
 
-function SecuredHeader() {
+function SecuredHeader({ onBack }: { onBack?: () => void }) {
   return (
-    <div className="flex items-center justify-center gap-2 py-[18px]">
+    <div className="relative flex items-center justify-center gap-2 py-[18px]">
+      {onBack && (
+        <button
+          onClick={onBack}
+          aria-label="Back"
+          className="absolute left-0 flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-black/5 active:scale-95"
+        >
+          <ArrowLeft className="text-lg" />
+        </button>
+      )}
       <Image src="/icon.png" alt="" width={22} height={22} />
       <span className="text-[12.5px] font-semibold tracking-wide text-muted">Secured by Lunas</span>
     </div>
@@ -39,7 +48,14 @@ function SecuredHeader() {
 
 function CheckoutContent() {
   const params = useSearchParams();
+  const router = useRouter();
   const isDemo = params.get("demo") === "1";
+  const isPreview = params.get("preview") === "1";
+  const handleBack = isPreview
+    ? () => router.back()
+    : isDemo
+      ? () => router.push("/")
+      : undefined;
   const title = params.get("title");
   const priceUsd = params.get("price");
   const address = params.get("address");
@@ -97,20 +113,45 @@ function CheckoutContent() {
     setScreen("processing");
     demoTimerRef.current = setTimeout(() => setScreen("success"), 3200);
   }
+  function simulateUnderpaid() {
+    setScreen("processing");
+    demoTimerRef.current = setTimeout(() => setScreen("underpaid"), 3200);
+  }
+  function simulateUnsupportedToken() {
+    setScreen("unsupportedToken");
+  }
 
   if (missingRealParams) {
-    return <ExpiredScreen waTarget={waTarget} />;
+    return <ExpiredScreen waTarget={waTarget} onBack={handleBack} />;
   }
 
   const displayTitle = title ?? "Workshop ticket";
   const displayPrice = priceUsd ?? "25.00";
 
   if (screen === "errPaid") {
-    return <AlreadyPaidScreen merchantName={merchantName} onView={() => setScreen("success")} />;
+    return (
+      <AlreadyPaidScreen merchantName={merchantName} onView={() => setScreen("success")} onBack={handleBack} />
+    );
+  }
+
+  if (screen === "underpaid") {
+    return (
+      <UnderpaidScreen
+        productPrice={displayPrice}
+        receivedAmount={(Number(displayPrice) - 5 > 0 ? Number(displayPrice) - 5 : Number(displayPrice) * 0.7).toFixed(2)}
+        waTarget={waTarget}
+        onSendRest={() => setScreen("checkout")}
+        onBack={handleBack}
+      />
+    );
+  }
+
+  if (screen === "unsupportedToken") {
+    return <UnsupportedTokenScreen onBack={() => setScreen("checkout")} onBackToMerchant={handleBack} />;
   }
 
   if (screen === "processing") {
-    return <ProcessingScreen productName={displayTitle} productPrice={displayPrice} />;
+    return <ProcessingScreen productName={displayTitle} productPrice={displayPrice} onBack={handleBack} />;
   }
 
   if (screen === "success") {
@@ -126,7 +167,7 @@ function CheckoutContent() {
 
   return (
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
-      <SecuredHeader />
+      <SecuredHeader onBack={handleBack} />
       <div className="flex flex-col items-center gap-1.5 py-1.5 text-center">
         <div className="flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-full border border-line bg-white">
           <Storefront className="text-2xl text-muted" />
@@ -146,30 +187,60 @@ function CheckoutContent() {
       </div>
 
       {waTarget && (
-        <div className="mt-3.5 flex items-center justify-center gap-1.5 text-[12.5px] text-muted">
+        <a
+          href={`https://wa.me/${waTarget}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3.5 flex items-center justify-center gap-1.5 text-[12.5px] text-muted transition-colors hover:text-success active:scale-[.98]"
+        >
           <WhatsappLogo className="text-base" />
           Questions? Message {merchantName}
-        </div>
+        </a>
       )}
 
       <div className="flex-1" />
 
       {isDemo && (
-        <button
-          onClick={simulatePay}
-          className="h-12 rounded-[13px] border-[1.5px] border-dashed border-primary/35 text-[13.5px] font-semibold text-primary transition-colors hover:bg-primary/5 active:scale-[.97]"
-        >
-          ▶ Demo: simulate a payment
-        </button>
+        <div className="mt-5 flex flex-col gap-3 border-t border-dashed border-line pt-5">
+          <p className="text-center text-[11px] font-semibold uppercase tracking-[.1em] text-muted">
+            Demo controls
+          </p>
+          <button
+            onClick={simulatePay}
+            className="h-12 rounded-[13px] border-[1.5px] border-dashed border-primary/40 text-[13.5px] font-semibold text-primary transition-colors hover:bg-primary/5 active:scale-[.97]"
+          >
+            ▶ Demo: simulate a payment
+          </button>
+          <button
+            onClick={simulateUnderpaid}
+            className="h-11 rounded-[13px] border-[1.5px] border-dashed border-amber-500/45 text-[12.5px] font-semibold text-amber-600 transition-colors hover:bg-amber-500/5 active:scale-[.97]"
+          >
+            ▶ Demo: underpaid
+          </button>
+          <button
+            onClick={simulateUnsupportedToken}
+            className="h-11 rounded-[13px] border-[1.5px] border-dashed border-danger/40 text-[12.5px] font-semibold text-danger transition-colors hover:bg-danger/5 active:scale-[.97]"
+          >
+            ▶ Demo: unsupported token
+          </button>
+        </div>
       )}
     </div>
   );
 }
 
-function ProcessingScreen({ productName, productPrice }: { productName: string; productPrice: string }) {
+function ProcessingScreen({
+  productName,
+  productPrice,
+  onBack,
+}: {
+  productName: string;
+  productPrice: string;
+  onBack?: () => void;
+}) {
   return (
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-in">
-      <SecuredHeader />
+      <SecuredHeader onBack={onBack} />
       <div className="flex flex-1 flex-col items-center justify-center gap-[26px] text-center">
         <div className="relative flex h-[180px] w-[180px] items-center justify-center">
           <span className="absolute inset-0 rounded-full bg-primary/10" style={{ animation: "ripple 2s ease-out infinite" }} />
@@ -296,10 +367,10 @@ function Row({ label, value, mono }: { label: string; value: string; mono?: bool
   );
 }
 
-function ExpiredScreen({ waTarget }: { waTarget: string | null }) {
+function ExpiredScreen({ waTarget, onBack }: { waTarget: string | null; onBack?: () => void }) {
   return (
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
-      <SecuredHeader />
+      <SecuredHeader onBack={onBack} />
       <div className="flex flex-1 flex-col items-center justify-center gap-[18px] text-center">
         <Image src="/link-expired.png" alt="" width={150} height={150} className="animate-float" />
         <div>
@@ -326,10 +397,18 @@ function ExpiredScreen({ waTarget }: { waTarget: string | null }) {
   );
 }
 
-function AlreadyPaidScreen({ merchantName, onView }: { merchantName: string; onView: () => void }) {
+function AlreadyPaidScreen({
+  merchantName,
+  onView,
+  onBack,
+}: {
+  merchantName: string;
+  onView: () => void;
+  onBack?: () => void;
+}) {
   return (
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
-      <SecuredHeader />
+      <SecuredHeader onBack={onBack} />
       <div className="flex flex-1 flex-col items-center justify-center gap-[18px] text-center">
         <Image src="/paid-celebrate.png" alt="" width={150} height={150} className="animate-float" />
         <div>
@@ -345,6 +424,105 @@ function AlreadyPaidScreen({ merchantName, onView }: { merchantName: string; onV
           className="flex h-[46px] items-center rounded-[13px] border border-line bg-white px-[22px] text-sm font-semibold text-ink transition-transform active:scale-95"
         >
           View receipt
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function UnderpaidScreen({
+  productPrice,
+  receivedAmount,
+  waTarget,
+  onSendRest,
+  onBack,
+}: {
+  productPrice: string;
+  receivedAmount: string;
+  waTarget: string | null;
+  onSendRest: () => void;
+  onBack?: () => void;
+}) {
+  const remaining = (Number(productPrice) - Number(receivedAmount)).toFixed(2);
+
+  return (
+    <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
+      <SecuredHeader onBack={onBack} />
+      <div className="flex flex-1 flex-col items-center justify-center gap-[18px] text-center">
+        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
+          <span className="font-display text-[34px] font-extrabold text-primary">!</span>
+        </div>
+        <div>
+          <p className="font-display mb-1.5 text-2xl font-extrabold tracking-tight text-ink">
+            Almost there
+          </p>
+          <p className="max-w-[280px] text-sm leading-relaxed text-muted">
+            We received {receivedAmount} USDC — that&apos;s {remaining} USDC short of the{" "}
+            {productPrice} USDC total. Send the rest to finish.
+          </p>
+        </div>
+        <div className="w-full max-w-[320px] rounded-2xl border border-line bg-white p-[22px] shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
+          <Row label="Received" value={`${receivedAmount} USDC`} mono />
+          <Row label="Still needed" value={`${remaining} USDC`} mono />
+        </div>
+        <button
+          onClick={onSendRest}
+          className="flex h-[46px] items-center rounded-[13px] bg-primary px-[22px] text-sm font-semibold text-white transition-transform active:scale-95"
+        >
+          Send the rest
+        </button>
+        {waTarget && (
+          <a
+            href={`https://wa.me/${waTarget}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-[46px] items-center gap-2 rounded-[13px] border border-line bg-white px-[22px] text-sm font-semibold text-ink transition-transform active:scale-95"
+          >
+            <WhatsappLogo weight="fill" className="text-lg text-success" />
+            Ask the seller for help
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function UnsupportedTokenScreen({
+  onBack,
+  onBackToMerchant,
+}: {
+  onBack: () => void;
+  onBackToMerchant?: () => void;
+}) {
+  return (
+    <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
+      <SecuredHeader onBack={onBackToMerchant} />
+      <div className="flex flex-1 flex-col items-center justify-center gap-[18px] text-center">
+        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-black/[.05]">
+          <span className="font-display text-[30px] font-extrabold text-muted">?</span>
+        </div>
+        <div>
+          <p className="font-display mb-1.5 text-2xl font-extrabold tracking-tight text-ink">
+            We can&apos;t accept that yet
+          </p>
+          <p className="max-w-[280px] text-sm leading-relaxed text-muted">
+            That payment method isn&apos;t supported here. Your funds are safe — retrieve them,
+            then pay with a different method.
+          </p>
+        </div>
+        <a
+          href="https://app.zerodev.app/sra"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex h-[46px] items-center rounded-[13px] bg-primary px-[22px] text-sm font-semibold text-white transition-transform active:scale-95"
+        >
+          Retrieve my funds
+        </a>
+        <button
+          onClick={onBack}
+          className="h-11 rounded-xl px-[22px] text-sm font-medium text-muted transition-colors hover:bg-black/[.04]"
+        >
+          Try a different method
         </button>
       </div>
     </div>

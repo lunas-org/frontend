@@ -10,8 +10,7 @@ import { useRouter } from "next/navigation";
 import { Tag, CaretRight, Plus } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn } from "@/lib/magic";
 import { listProducts, listOrders, type Product } from "@/lib/store";
-import { Frame } from "@/components/Frame";
-import { BottomNav } from "@/components/BottomNav";
+import { CalmLoader } from "@/components/CalmLoader";
 
 export default function ProductsListPage() {
   const router = useRouter();
@@ -43,8 +42,7 @@ export default function ProductsListPage() {
   }, [router]);
 
   return (
-    <Frame>
-      <div className="min-h-screen px-6 pb-[92px] animate-fade-up">
+    <div className="min-h-screen px-6 pb-[92px] animate-fade-up">
         <div className="flex items-center justify-between py-5">
           <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">Products</h1>
           <button
@@ -55,6 +53,12 @@ export default function ProductsListPage() {
             New
           </button>
         </div>
+
+        {!ready && (
+          <div className="flex justify-center py-10">
+            <CalmLoader label="Loading..." />
+          </div>
+        )}
 
         {ready && products.length === 0 && (
           <div className="flex flex-col items-center gap-3.5 rounded-[20px] border border-dashed border-line bg-white px-6 py-9 text-center">
@@ -90,9 +94,6 @@ export default function ProductsListPage() {
             </button>
           ))}
         </div>
-
-        <BottomNav active="products" />
-      </div>
-    </Frame>
+    </div>
   );
 }

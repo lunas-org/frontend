@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import { loginWithGoogle } from "@/lib/magic";
-import { Frame } from "@/components/Frame";
 
 function GoogleIcon() {
   return (
@@ -39,7 +38,6 @@ export default function LoginPage() {
   }
 
   return (
-    <Frame>
       <div className="flex min-h-screen flex-col animate-fade-up">
         <div className="p-3.5">
           <button
@@ -87,6 +85,5 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
-    </Frame>
   );
 }

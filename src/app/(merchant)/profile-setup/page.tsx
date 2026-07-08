@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Camera } from "@phosphor-icons/react/dist/ssr";
 import { saveProfile, markProfileSetupSeen } from "@/lib/store";
-import { Frame } from "@/components/Frame";
 
 export default function ProfileSetupPage() {
   const router = useRouter();
@@ -43,8 +42,7 @@ export default function ProfileSetupPage() {
   }
 
   return (
-    <Frame>
-      <div className="flex min-h-screen flex-col p-6 animate-fade-up">
+    <div className="flex min-h-screen flex-col p-6 animate-fade-up">
         <div className="flex flex-col items-center gap-1.5 py-6 text-center">
           <Image src="/hello-wave.png" alt="" width={132} height={132} className="animate-float" />
           <h1 className="font-display mt-1 text-[28px] font-extrabold tracking-tight text-ink">
@@ -113,7 +111,6 @@ export default function ProfileSetupPage() {
             Skip for now
           </button>
         </div>
-      </div>
-    </Frame>
+    </div>
   );
 }

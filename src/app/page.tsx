@@ -9,6 +9,7 @@ import {
   GlobeHemisphereEast,
   DeviceMobile,
   Receipt,
+  CaretDown,
 } from "@phosphor-icons/react/dist/ssr";
 import { Frame } from "@/components/Frame";
 
@@ -157,8 +158,11 @@ function WhyCard({ icon, title, desc }: { icon: React.ReactNode; title: string; 
 
 function Faq({ q, a }: { q: string; a: string }) {
   return (
-    <details className="rounded-[14px] border border-line bg-white px-[18px] py-4">
-      <summary className="cursor-pointer list-none text-[14.5px] font-semibold text-ink">{q}</summary>
+    <details className="group rounded-[14px] border border-line bg-white px-[18px] py-4">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[14.5px] font-semibold text-ink [&::-webkit-details-marker]:hidden">
+        {q}
+        <CaretDown className="flex-none text-base text-muted transition-transform duration-200 group-open:rotate-180" />
+      </summary>
       <p className="mt-2.5 text-[13.5px] leading-relaxed text-muted">{a}</p>
     </details>
   );
