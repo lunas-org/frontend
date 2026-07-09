@@ -31,6 +31,11 @@ export default function NewProductPage() {
   const [title, setTitle] = useState("");
   const [currency, setCurrency] = useState<Currency>("USD");
   const [amountInput, setAmountInput] = useState("");
+  // Canonical price in USD, kept at full float precision. `amountInput` is only ever a *display*
+  // string for the currently-focused currency — switching currency reformats it FROM this value,
+  // never re-derives this value FROM the (already-rounded) displayed string. Otherwise toggling
+  // USD -> IDR -> USD -> IDR repeatedly compounds rounding error each hop and the number drifts.
+  const [priceUsdValue, setPriceUsdValue] = useState(0);
   const [touchedName, setTouchedName] = useState(false);
   const [touchedPrice, setTouchedPrice] = useState(false);
 
@@ -55,27 +60,29 @@ export default function NewProductPage() {
     })();
   }, [router]);
 
-  const rawAmount = parseFloat(amountInput);
-  const price = currency === "USD" ? rawAmount : usdFromIdr(rawAmount || 0);
+  const price = priceUsdValue;
   const priceUsd = price > 0 ? price.toFixed(2) : "";
   const nameError = touchedName && !title.trim();
   const priceError = touchedPrice && !(price > 0);
   const formValid = !!title.trim() && price > 0;
 
-  // Switching currency mid-entry converts whatever's typed instead of wiping it, so the merchant
-  // doesn't lose their number — same USD amount underneath either way, since that's what's
-  // actually stored and what the SRA/Checkout.sol settle in.
+  function handleAmountChange(raw: string) {
+    const cleaned = raw.replace(currency === "USD" ? /[^0-9.]/g : /[^0-9]/g, "");
+    setAmountInput(cleaned);
+    const n = parseFloat(cleaned) || 0;
+    setPriceUsdValue(currency === "USD" ? n : usdFromIdr(n));
+  }
+
+  // Switching currency only reformats the displayed string FROM priceUsdValue — it never feeds
+  // the rounded display back into priceUsdValue, so toggling back and forth (without retyping)
+  // never drifts the underlying USD amount, which is what's actually stored and what the
+  // SRA/Checkout.sol settle in.
   function switchCurrency(next: Currency) {
-    if (next === currency || !(rawAmount > 0)) {
-      setCurrency(next);
-      return;
-    }
-    if (next === "IDR") {
-      setAmountInput(Math.round(rawAmount * USD_TO_IDR).toString());
-    } else {
-      setAmountInput(usdFromIdr(rawAmount).toFixed(2));
-    }
     setCurrency(next);
+    if (!(priceUsdValue > 0)) return;
+    setAmountInput(
+      next === "USD" ? priceUsdValue.toFixed(2) : Math.round(priceUsdValue * USD_TO_IDR).toString()
+    );
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -197,9 +204,7 @@ export default function NewProductPage() {
             <div className="relative">
               <input
                 value={amountInput}
-                onChange={(e) =>
-                  setAmountInput(e.target.value.replace(currency === "USD" ? /[^0-9.]/g : /[^0-9]/g, ""))
-                }
+                onChange={(e) => handleAmountChange(e.target.value)}
                 onBlur={() => setTouchedPrice(true)}
                 placeholder={currency === "USD" ? "0.00" : "0"}
                 inputMode="decimal"
