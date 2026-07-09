@@ -14,10 +14,11 @@ import { isLoggedIn, getMagicProvider } from "@/lib/magic";
 import { createSmartAccountFromProvider, createProductPaymentAddress, generateOrderId } from "@/lib/zerodev";
 import { saveProduct, saveOrder, getProfile } from "@/lib/store";
 import { CalmLoader } from "@/components/CalmLoader";
-import { idrEstimate } from "@/lib/format";
+import { idrEstimate, usdFromIdr, USD_TO_IDR } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
 
 type Status = "checking" | "form" | "creating" | "error";
+type Currency = "USD" | "IDR";
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -28,7 +29,8 @@ export default function NewProductPage() {
   const [displayName, setDisplayName] = useState("");
 
   const [title, setTitle] = useState("");
-  const [priceUsd, setPriceUsd] = useState("");
+  const [currency, setCurrency] = useState<Currency>("USD");
+  const [amountInput, setAmountInput] = useState("");
   const [touchedName, setTouchedName] = useState(false);
   const [touchedPrice, setTouchedPrice] = useState(false);
 
@@ -53,10 +55,28 @@ export default function NewProductPage() {
     })();
   }, [router]);
 
-  const price = parseFloat(priceUsd);
+  const rawAmount = parseFloat(amountInput);
+  const price = currency === "USD" ? rawAmount : usdFromIdr(rawAmount || 0);
+  const priceUsd = price > 0 ? price.toFixed(2) : "";
   const nameError = touchedName && !title.trim();
   const priceError = touchedPrice && !(price > 0);
   const formValid = !!title.trim() && price > 0;
+
+  // Switching currency mid-entry converts whatever's typed instead of wiping it, so the merchant
+  // doesn't lose their number — same USD amount underneath either way, since that's what's
+  // actually stored and what the SRA/Checkout.sol settle in.
+  function switchCurrency(next: Currency) {
+    if (next === currency || !(rawAmount > 0)) {
+      setCurrency(next);
+      return;
+    }
+    if (next === "IDR") {
+      setAmountInput(Math.round(rawAmount * USD_TO_IDR).toString());
+    } else {
+      setAmountInput(usdFromIdr(rawAmount).toFixed(2));
+    }
+    setCurrency(next);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -156,25 +176,49 @@ export default function NewProductPage() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-ink">{t("newProduct.priceLabel")}</label>
+            <div className="flex items-center justify-between">
+              <label className="text-[13px] font-semibold text-ink">{t("newProduct.priceLabel")}</label>
+              <div className="inline-flex rounded-full glass-card p-0.5">
+                {(["USD", "IDR"] as const).map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => switchCurrency(c)}
+                    aria-pressed={currency === c}
+                    className={`rounded-full px-3 py-1 text-[11.5px] font-semibold uppercase transition-colors ${
+                      currency === c ? "bg-primary text-white" : "text-muted hover:text-ink"
+                    }`}
+                  >
+                    {c === "USD" ? "USDC" : "Rp"}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="relative">
               <input
-                value={priceUsd}
-                onChange={(e) => setPriceUsd(e.target.value.replace(/[^0-9.]/g, ""))}
+                value={amountInput}
+                onChange={(e) =>
+                  setAmountInput(e.target.value.replace(currency === "USD" ? /[^0-9.]/g : /[^0-9]/g, ""))
+                }
                 onBlur={() => setTouchedPrice(true)}
-                placeholder="0.00"
+                placeholder={currency === "USD" ? "0.00" : "0"}
                 inputMode="decimal"
                 className={`font-display h-[52px] w-full rounded-[13px] border-[1.5px] bg-white px-4 pr-[72px] text-[15px] font-semibold text-ink transition-shadow focus:shadow-[0_0_0_3px_rgba(47,42,107,0.12)] focus:outline-none ${
                   priceError ? "border-danger focus:border-danger" : "border-line focus:border-primary"
                 }`}
               />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[13.5px] font-semibold text-muted">USDC</span>
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[13.5px] font-semibold text-muted">
+                {currency === "USD" ? "USDC" : "Rp"}
+              </span>
             </div>
             {priceError && (
               <p className="flex items-center gap-1.5 text-[12.5px] text-danger">
                 <WarningCircle className="text-sm" />
                 {t("newProduct.priceError")}
               </p>
+            )}
+            {currency === "IDR" && price > 0 && (
+              <p className="text-[12px] text-muted">≈ {price.toFixed(2)} USDC</p>
             )}
           </div>
         </div>

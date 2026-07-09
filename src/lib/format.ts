@@ -6,7 +6,7 @@
 // yet) and clearly labelled "≈" so it reads as an estimate, never a quoted settlement figure.
 // When a live rate source lands, replace USD_TO_IDR with a fetched value.
 
-const USD_TO_IDR = 16300;
+export const USD_TO_IDR = 16300;
 
 /** "≈ Rp 407.500" for a USDC string like "25.00", or null if the amount isn't a positive number. */
 export function idrEstimate(usdcAmount: string | number): string | null {
@@ -18,4 +18,10 @@ export function idrEstimate(usdcAmount: string | number): string | null {
     currency: "IDR",
     maximumFractionDigits: 0,
   }).format(idr)}`;
+}
+
+/** Rp 25000 -> 1.53 (USD/USDC). Same pinned rate as idrEstimate, just inverted, so a merchant
+ * can price a product in rupiah and it's stored as the USDC amount the SRA/contract actually use. */
+export function usdFromIdr(idrAmount: number): number {
+  return idrAmount / USD_TO_IDR;
 }
