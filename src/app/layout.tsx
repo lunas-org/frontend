@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { MotionConfig } from "framer-motion";
 import "./globals.css";
 import { DevHud } from "@/components/DevHud";
 import { Toaster } from "@/components/Toast";
@@ -62,12 +63,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${hankenGrotesk.variable} ${inter.variable} antialiased`}>
-        <I18nProvider>
-          {children}
-          <OfflineBanner />
-          <Toaster />
-          <DevHud />
-        </I18nProvider>
+        <MotionConfig reducedMotion="user">
+          <I18nProvider>
+            {children}
+            <OfflineBanner />
+            <Toaster />
+            <DevHud />
+          </I18nProvider>
+        </MotionConfig>
       </body>
     </html>
   );
