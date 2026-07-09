@@ -70,7 +70,7 @@ export default function ProductsListPage() {
             <p className="max-w-[230px] text-[13px] leading-relaxed text-muted">{t("products.emptyDesc")}</p>
             <button
               onClick={() => router.push("/products/new")}
-              className="h-[42px] rounded-xl border border-primary/30 px-5 text-[13.5px] font-semibold text-primary transition-colors hover:bg-primary/[.06] active:scale-95"
+              className="h-11 rounded-xl border border-primary/30 px-5 text-[13.5px] font-semibold text-primary transition-colors hover:bg-primary/[.06] active:scale-95"
             >
               {t("products.emptyCta")}
             </button>

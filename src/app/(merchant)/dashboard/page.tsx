@@ -179,11 +179,11 @@ export default function MerchantDashboardPage() {
           </div>
           <button
             onClick={() => router.push("/settings")}
-            className="flex h-[42px] w-[42px] items-center justify-center overflow-hidden rounded-full glass-card transition-transform active:scale-95"
+            className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full glass-card transition-transform active:scale-95"
           >
             {avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatar} alt="" width={42} height={42} className="h-full w-full object-cover" />
+              <img src={avatar} alt="" width={44} height={44} className="h-full w-full object-cover" />
             ) : (
               <User className="text-[19px] text-muted" />
             )}
@@ -242,7 +242,7 @@ export default function MerchantDashboardPage() {
                   </div>
                   <button
                     onClick={() => router.push("/products/new")}
-                    className="h-[42px] rounded-xl border border-primary/30 px-5 text-[13.5px] font-semibold text-primary transition-colors hover:bg-primary/[.06] active:scale-95"
+                    className="h-11 rounded-xl border border-primary/30 px-5 text-[13.5px] font-semibold text-primary transition-colors hover:bg-primary/[.06] active:scale-95"
                   >
                     {t("dashboard.emptyCta")}
                   </button>
