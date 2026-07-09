@@ -24,6 +24,7 @@ const inter = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://lunas.app"),
   title: "Lunas",
   description: "Get paid from anywhere. Lunas.",
   manifest: "/manifest.json",
