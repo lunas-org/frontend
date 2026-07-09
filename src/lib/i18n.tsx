@@ -149,6 +149,9 @@ const en = {
   "settings.noProducts": "No products yet.",
   "settings.account": "Account",
   "settings.logout": "Log out",
+  "settings.logoutTitle": "Log out?",
+  "settings.logoutDesc": "You'll need to sign in with Google again to manage your products.",
+  "settings.logoutCancel": "Cancel",
 
   "checkout.paying": "Paying",
   "checkout.scan": "Scan with your payment app",
@@ -356,6 +359,9 @@ const id: Record<Key, string> = {
   "settings.noProducts": "Belum ada produk.",
   "settings.account": "Akun",
   "settings.logout": "Keluar",
+  "settings.logoutTitle": "Keluar?",
+  "settings.logoutDesc": "Anda perlu masuk lagi dengan Google untuk mengelola produk Anda.",
+  "settings.logoutCancel": "Batal",
 
   "checkout.paying": "Membayar",
   "checkout.scan": "Pindai dengan aplikasi pembayaran Anda",

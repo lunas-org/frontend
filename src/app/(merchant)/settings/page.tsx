@@ -20,6 +20,7 @@ export default function SettingsPage() {
   const [name, setName] = useState("");
   const [wa, setWa] = useState("");
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const ranRef = useRef(false);
 
@@ -142,12 +143,45 @@ export default function SettingsPage() {
 
         <p className="mb-2.5 mt-[26px] text-xs font-semibold uppercase tracking-[.1em] text-muted">{t("settings.account")}</p>
         <button
-          onClick={handleLogout}
+          onClick={() => setConfirmLogout(true)}
           className="flex w-full items-center gap-3 rounded-[15px] glass-card px-4 py-[15px] text-sm font-semibold text-danger transition-transform active:scale-[.98]"
         >
           <SignOut className="text-lg" />
           {t("settings.logout")}
         </button>
+
+        {confirmLogout && (
+          <div
+            className="absolute inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-[2px] animate-fade-in"
+            onClick={() => setConfirmLogout(false)}
+          >
+            <div
+              className="mb-4 w-[calc(100%-32px)] rounded-[24px] glass-card p-6 text-center"
+              style={{ animation: "fadeUp .3s cubic-bezier(.2,.7,.3,1) both" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mx-auto mb-3.5 flex h-14 w-14 items-center justify-center rounded-full bg-danger/10">
+                <SignOut className="text-2xl text-danger" />
+              </div>
+              <p className="font-display text-xl font-extrabold tracking-tight text-ink">{t("settings.logoutTitle")}</p>
+              <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted">{t("settings.logoutDesc")}</p>
+              <div className="mt-5 flex flex-col gap-2.5">
+                <button
+                  onClick={handleLogout}
+                  className="h-[48px] w-full rounded-2xl bg-danger text-[15px] font-semibold text-white transition-transform active:scale-[.97]"
+                >
+                  {t("settings.logout")}
+                </button>
+                <button
+                  onClick={() => setConfirmLogout(false)}
+                  className="h-11 w-full rounded-xl text-sm font-medium text-muted transition-colors hover:bg-black/[.04]"
+                >
+                  {t("settings.logoutCancel")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 }
