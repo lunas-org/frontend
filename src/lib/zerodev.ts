@@ -130,7 +130,7 @@ export async function getUsdcBalance(address: `0x${string}`): Promise<string | n
   const usdcAddress = process.env.NEXT_PUBLIC_USDC_ADDRESS as `0x${string}` | undefined;
   if (!usdcAddress) return null;
 
-  const publicClient = createPublicClient({ chain: arbitrum, transport: http() });
+  const publicClient = createPublicClient({ chain, transport: http() });
   const raw = await publicClient.readContract({
     address: usdcAddress,
     abi: erc20Abi,
