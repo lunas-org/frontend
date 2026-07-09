@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
 import { ArrowLeft, CheckCircle, Link as LinkIcon, WhatsappLogo, Eye } from "@phosphor-icons/react/dist/ssr";
 import { getProduct, getOrdersForProduct, getProfile, type Product, type Order } from "@/lib/store";
@@ -21,6 +22,7 @@ export default function ProductDetailPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [sent, setSent] = useState(false);
 
   useEffect(() => {
     const p = getProduct(params.id);
@@ -53,6 +55,7 @@ export default function ProductDetailPage() {
     await navigator.clipboard.writeText(checkoutUrl);
     setCopied(true);
     toast(t("toast.linkCopied"));
+    setSent(true);
     setTimeout(() => setCopied(false), 1800);
   }
 
@@ -118,6 +121,7 @@ export default function ProductDetailPage() {
             href={`https://wa.me/?text=${whatsappText}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => setSent(true)}
             className="flex h-[50px] flex-1 items-center justify-center gap-2 rounded-[13px] bg-success text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
           >
             <WhatsappLogo weight="fill" className="text-lg" />
@@ -143,6 +147,29 @@ export default function ProductDetailPage() {
           <Eye className="text-lg" />
           {t("detail.preview")}
         </button>
+
+        {sent && (
+          <div
+            className="absolute inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-[2px] animate-fade-in"
+            onClick={() => setSent(false)}
+          >
+            <div
+              className="mb-4 w-[calc(100%-32px)] rounded-[24px] border border-line bg-paper p-6 text-center shadow-[0_20px_60px_rgba(21,22,27,0.22)]"
+              style={{ animation: "fadeUp .3s cubic-bezier(.2,.7,.3,1) both" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image src="/invoice-sent.png" alt="" width={132} height={132} className="mx-auto animate-float" />
+              <p className="font-display mt-2 text-xl font-extrabold tracking-tight text-ink">{t("detail.sentTitle")}</p>
+              <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted">{t("detail.sentDesc")}</p>
+              <button
+                onClick={() => setSent(false)}
+                className="mt-5 h-[48px] w-full rounded-2xl bg-primary text-[15px] font-semibold text-white transition-transform active:scale-[.97]"
+              >
+                {t("detail.sentDone")}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
   );
 }

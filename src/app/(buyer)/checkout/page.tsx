@@ -25,7 +25,7 @@ import { useI18n } from "@/lib/i18n";
 
 const POLL_INTERVAL_MS = 4000;
 
-type Screen = "checkout" | "processing" | "success" | "errExpired" | "errPaid" | "underpaid" | "unsupportedToken";
+type Screen = "checkout" | "processing" | "pending" | "success" | "errExpired" | "errPaid" | "underpaid" | "unsupportedToken";
 type T = ReturnType<typeof useI18n>["t"];
 
 function chainById(chainId: number) {
@@ -132,8 +132,13 @@ function CheckoutContent() {
   const demoTimerRef = useRef<ReturnType<typeof setTimeout>>();
   useEffect(() => () => clearTimeout(demoTimerRef.current), []);
   function simulatePay() {
+    // processing (listening) -> pending (detected, confirming) -> success — a granular 3-beat
+    // that reads like the real routing/settlement stages.
     setScreen("processing");
-    demoTimerRef.current = setTimeout(() => setScreen("success"), 3200);
+    demoTimerRef.current = setTimeout(() => {
+      setScreen("pending");
+      demoTimerRef.current = setTimeout(() => setScreen("success"), 1600);
+    }, 2600);
   }
   function simulateUnderpaid() {
     setScreen("processing");
@@ -174,6 +179,10 @@ function CheckoutContent() {
 
   if (screen === "processing") {
     return <ProcessingScreen productName={displayTitle} productPrice={displayPrice} onBack={handleBack} />;
+  }
+
+  if (screen === "pending") {
+    return <PendingScreen productName={displayTitle} productPrice={displayPrice} />;
   }
 
   if (screen === "success") {
@@ -317,6 +326,35 @@ function ProcessingScreen({
         </div>
       </div>
       <p className="text-center text-xs text-muted">{t("checkout.processingKeepOpen")}</p>
+    </div>
+  );
+}
+
+function PendingScreen({ productName, productPrice }: { productName: string; productPrice: string }) {
+  const { t } = useI18n();
+  return (
+    <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-in">
+      <SecuredHeader />
+      <div className="flex flex-1 flex-col items-center justify-center gap-[26px] text-center">
+        <Image src="/payment-pending.png" alt="" width={160} height={160} className="animate-float" />
+        <div>
+          <p className="font-display mb-1.5 text-2xl font-extrabold tracking-tight text-ink">
+            {t("checkout.pendingTitle")}
+          </p>
+          <p className="inline-flex items-center gap-1.5 text-sm text-muted">
+            {t("checkout.pendingSub")}
+            <span className="flex gap-[3px]">
+              <span className="dot-blink h-1 w-1 rounded-full bg-muted" />
+              <span className="dot-blink h-1 w-1 rounded-full bg-muted" style={{ animationDelay: ".2s" }} />
+              <span className="dot-blink h-1 w-1 rounded-full bg-muted" style={{ animationDelay: ".4s" }} />
+            </span>
+          </p>
+        </div>
+        <div className="flex items-center gap-3 rounded-2xl border border-line bg-white px-[18px] py-3">
+          <span className="text-[13px] text-muted">{productName}</span>
+          <span className="font-display text-[14.5px] font-bold text-ink">{productPrice} USDC</span>
+        </div>
+      </div>
     </div>
   );
 }
