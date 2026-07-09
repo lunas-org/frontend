@@ -26,17 +26,27 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 export default function Home() {
   const { t } = useI18n();
   const heroRef = useRef<HTMLDivElement>(null);
-  const [showCta, setShowCta] = useState(false);
+  const footerRef = useRef<HTMLElement>(null);
+  const [heroGone, setHeroGone] = useState(false);
+  const [atFooter, setAtFooter] = useState(false);
 
-  // Reveal the sticky bottom CTA once the hero (with its own CTAs) has scrolled out of view,
-  // so the primary action is one tap away anywhere down the page without scrolling back up.
+  // Reveal the sticky bottom CTA once the hero (with its own CTAs) has scrolled out of view, so
+  // the primary action is one tap away down the page without scrolling back up. Hide it again at
+  // the footer, which already has its own CTA — otherwise the two buttons stack awkwardly.
   useEffect(() => {
-    const el = heroRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([entry]) => setShowCta(!entry.isIntersecting), { threshold: 0 });
-    io.observe(el);
-    return () => io.disconnect();
+    const hero = heroRef.current;
+    const footer = footerRef.current;
+    const ioHero = new IntersectionObserver(([e]) => setHeroGone(!e.isIntersecting), { threshold: 0 });
+    const ioFooter = new IntersectionObserver(([e]) => setAtFooter(e.isIntersecting), { threshold: 0 });
+    if (hero) ioHero.observe(hero);
+    if (footer) ioFooter.observe(footer);
+    return () => {
+      ioHero.disconnect();
+      ioFooter.disconnect();
+    };
   }, []);
+
+  const showCta = heroGone && !atFooter;
 
   return (
     <Frame>
@@ -122,7 +132,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="flex flex-col items-center gap-3.5 border-t border-line px-6 pb-10 pt-8 text-center">
+        <footer ref={footerRef} className="flex flex-col items-center gap-3.5 border-t border-line px-6 pb-10 pt-8 text-center">
           <Image src="/icon.png" alt="" width={36} height={36} className="opacity-90" />
           <Link
             href="/login"
