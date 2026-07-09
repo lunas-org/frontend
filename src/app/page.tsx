@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -24,6 +25,19 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 
 export default function Home() {
   const { t } = useI18n();
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [showCta, setShowCta] = useState(false);
+
+  // Reveal the sticky bottom CTA once the hero (with its own CTAs) has scrolled out of view,
+  // so the primary action is one tap away anywhere down the page without scrolling back up.
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setShowCta(!entry.isIntersecting), { threshold: 0 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <Frame>
       <div className="animate-fade-up">
@@ -43,7 +57,7 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="flex flex-col items-center gap-5 px-6 pb-11 pt-[44px] text-center">
+        <div ref={heroRef} className="flex flex-col items-center gap-5 px-6 pb-11 pt-[44px] text-center">
           <Image src="/hero.png" alt="" width={340} height={227} priority className="animate-float" />
           <h1 className="font-display max-w-xs text-[42px] font-extrabold leading-[1.05] tracking-tight text-ink">
             {t("landing.heroTitle")}
@@ -118,6 +132,21 @@ export default function Home() {
           </Link>
           <p className="text-xs text-muted">{t("landing.footer")}</p>
         </footer>
+      </div>
+
+      <div
+        className={`pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center transition-all duration-300 ${
+          showCta ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
+        }`}
+      >
+        <div className="w-full max-w-[430px] bg-gradient-to-t from-paper via-paper/95 to-transparent px-5 pb-[calc(14px+env(safe-area-inset-bottom))] pt-6">
+          <Link
+            href="/login"
+            className="pointer-events-auto flex h-[52px] items-center justify-center rounded-2xl bg-primary text-base font-semibold text-white shadow-[0_8px_24px_rgba(47,42,107,0.28)] transition-transform active:scale-[.97]"
+          >
+            {t("landing.startSelling")}
+          </Link>
+        </div>
       </div>
     </Frame>
   );
