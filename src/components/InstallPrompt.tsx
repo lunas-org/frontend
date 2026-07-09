@@ -58,7 +58,7 @@ export function InstallPrompt() {
         </div>
         <button
           onClick={install}
-          className="flex h-9 flex-none items-center gap-1.5 rounded-xl bg-primary px-3.5 text-[13px] font-semibold text-white transition-transform active:scale-95"
+          className="flex h-9 flex-none items-center gap-1.5 rounded-xl glass-btn px-3.5 text-[13px] font-semibold text-white transition-transform active:scale-95"
         >
           <DownloadSimple weight="bold" className="text-[15px]" />
           {t("install.add")}

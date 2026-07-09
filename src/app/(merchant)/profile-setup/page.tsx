@@ -118,7 +118,7 @@ export default function ProfileSetupPage() {
           <button
             onClick={finish}
             disabled={!name.trim()}
-            className="h-[52px] rounded-2xl bg-primary text-[15.5px] font-semibold text-white transition-transform active:scale-[.97] disabled:opacity-45"
+            className="h-[52px] rounded-2xl glass-btn text-[15.5px] font-semibold text-white transition-transform active:scale-[.97] disabled:opacity-45"
           >
             {t("profile.continue")}
           </button>

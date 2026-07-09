@@ -82,7 +82,7 @@ function ReceiptContent() {
       <div className="flex flex-col gap-2.5">
         <button
           onClick={share}
-          className="flex h-[52px] items-center justify-center gap-2 rounded-2xl bg-primary text-[15.5px] font-semibold text-white transition-transform active:scale-[.97]"
+          className="flex h-[52px] items-center justify-center gap-2 rounded-2xl glass-btn text-[15.5px] font-semibold text-white transition-transform active:scale-[.97]"
         >
           <ShareNetwork weight="fill" className="text-lg" />
           {t("receipt.share")}

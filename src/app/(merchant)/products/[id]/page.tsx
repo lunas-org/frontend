@@ -163,7 +163,7 @@ export default function ProductDetailPage() {
               <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted">{t("detail.sentDesc")}</p>
               <button
                 onClick={() => setSent(false)}
-                className="mt-5 h-[48px] w-full rounded-2xl bg-primary text-[15px] font-semibold text-white transition-transform active:scale-[.97]"
+                className="mt-5 h-[48px] w-full rounded-2xl glass-btn text-[15px] font-semibold text-white transition-transform active:scale-[.97]"
               >
                 {t("detail.sentDone")}
               </button>

@@ -26,7 +26,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         </div>
         <button
           onClick={reset}
-          className="flex h-[50px] items-center rounded-2xl bg-primary px-7 text-[15px] font-semibold text-white transition-transform active:scale-[.97]"
+          className="flex h-[50px] items-center rounded-2xl glass-btn px-7 text-[15px] font-semibold text-white transition-transform active:scale-[.97]"
         >
           {t("common.tryAgain")}
         </button>

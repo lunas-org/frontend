@@ -461,7 +461,7 @@ function SuccessScreen({
       <div className="flex flex-col gap-2.5 animate-fade-up" style={{ animationDelay: ".8s" }}>
         <button
           onClick={shareReceipt}
-          className="flex h-[52px] items-center justify-center rounded-2xl bg-primary text-[15.5px] font-semibold text-white transition-transform active:scale-[.97]"
+          className="flex h-[52px] items-center justify-center rounded-2xl glass-btn text-[15.5px] font-semibold text-white transition-transform active:scale-[.97]"
         >
           {t("checkout.shareReceipt")}
         </button>
@@ -585,7 +585,7 @@ function UnderpaidScreen({
         </div>
         <button
           onClick={onSendRest}
-          className="flex h-[46px] items-center rounded-[13px] bg-primary px-[22px] text-sm font-semibold text-white transition-transform active:scale-95"
+          className="flex h-[46px] items-center rounded-[13px] glass-btn px-[22px] text-sm font-semibold text-white transition-transform active:scale-95"
         >
           {t("checkout.sendRest")}
         </button>
@@ -630,7 +630,7 @@ function UnsupportedTokenScreen({
           href="https://app.zerodev.app/sra"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex h-[46px] items-center rounded-[13px] bg-primary px-[22px] text-sm font-semibold text-white transition-transform active:scale-95"
+          className="flex h-[46px] items-center rounded-[13px] glass-btn px-[22px] text-sm font-semibold text-white transition-transform active:scale-95"
         >
           {t("checkout.retrieve")}
         </a>

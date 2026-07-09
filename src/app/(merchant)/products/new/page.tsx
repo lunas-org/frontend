@@ -207,7 +207,7 @@ export default function NewProductPage() {
         <button
           type="submit"
           disabled={!formValid || status === "creating"}
-          className="flex h-[52px] items-center justify-center gap-2.5 rounded-2xl bg-primary text-[15.5px] font-semibold text-white transition-transform active:scale-[.97] disabled:opacity-45"
+          className="flex h-[52px] items-center justify-center gap-2.5 rounded-2xl glass-btn text-[15.5px] font-semibold text-white transition-transform active:scale-[.97] disabled:opacity-45"
         >
           {status === "creating" && (
             <Image src="/icon.png" alt="" width={22} height={22} className="animate-breathe brightness-[4]" style={{ animationDuration: ".9s" }} />

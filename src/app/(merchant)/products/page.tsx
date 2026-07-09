@@ -50,7 +50,7 @@ export default function ProductsListPage() {
           <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">{t("products.title")}</h1>
           <button
             onClick={() => router.push("/products/new")}
-            className="flex h-9 items-center gap-1.5 rounded-[10px] bg-primary px-3.5 text-[13px] font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
+            className="flex h-9 items-center gap-1.5 rounded-[10px] glass-btn px-3.5 text-[13px] font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
           >
             <Plus className="text-base" />
             {t("products.new")}

@@ -60,7 +60,7 @@ export default function Home() {
             <LanguageToggle />
             <Link
               href="/login"
-              className="flex h-[38px] items-center rounded-[10px] bg-primary px-4 text-[13.5px] font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
+              className="flex h-[38px] items-center rounded-[10px] glass-btn px-4 text-[13.5px] font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
             >
               {t("landing.signIn")}
             </Link>
@@ -76,7 +76,7 @@ export default function Home() {
           <div className="mt-1.5 flex w-full max-w-[320px] flex-col gap-2.5">
             <Link
               href="/login"
-              className="flex h-[52px] items-center justify-center rounded-2xl bg-primary text-base font-semibold text-white shadow-[0_8px_24px_rgba(47,42,107,0.28)] transition-transform active:scale-[.97]"
+              className="flex h-[52px] items-center justify-center rounded-2xl glass-btn text-base font-semibold text-white transition-transform active:scale-[.97]"
             >
               {t("landing.startSelling")}
             </Link>
@@ -136,7 +136,7 @@ export default function Home() {
           <Image src="/icon.png" alt="" width={36} height={36} className="opacity-90" />
           <Link
             href="/login"
-            className="flex h-12 items-center rounded-[13px] bg-primary px-7 text-[15px] font-semibold text-white transition-transform active:scale-[.97]"
+            className="flex h-12 items-center rounded-[13px] glass-btn px-7 text-[15px] font-semibold text-white transition-transform active:scale-[.97]"
           >
             {t("landing.startFree")}
           </Link>
@@ -152,7 +152,7 @@ export default function Home() {
         <div className="w-full max-w-[430px] bg-gradient-to-t from-paper via-paper/95 to-transparent px-5 pb-[calc(14px+env(safe-area-inset-bottom))] pt-6">
           <Link
             href="/login"
-            className="pointer-events-auto flex h-[52px] items-center justify-center rounded-2xl bg-primary text-base font-semibold text-white shadow-[0_8px_24px_rgba(47,42,107,0.28)] transition-transform active:scale-[.97]"
+            className="pointer-events-auto flex h-[52px] items-center justify-center rounded-2xl glass-btn text-base font-semibold text-white transition-transform active:scale-[.97]"
           >
             {t("landing.startSelling")}
           </Link>

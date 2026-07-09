@@ -41,6 +41,25 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.55);
     box-shadow: 0 4px 20px rgba(21, 22, 27, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.7);
   }
+  /* Liquid-glass primary button — visionOS-style: the brand navy shows through a depth gradient,
+     a bright top specular edge + rim catch the light, and a soft navy glow lifts it off the page.
+     Replaces flat `bg-primary` on CTAs. Text stays white. */
+  .glass-btn {
+    color: #fff;
+    background-image:
+      linear-gradient(150deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 44%),
+      linear-gradient(180deg, #3b3590, #2a2560);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow:
+      0 10px 30px rgba(47, 42, 107, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -10px 20px rgba(0, 0, 0, 0.16);
+  }
+  .glass-btn:hover {
+    background-image:
+      linear-gradient(150deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 46%),
+      linear-gradient(180deg, #423b9c, #2d2766);
+  }
 }
 
 /* Keyboard focus ring — only shows for keyboard users (:focus-visible), never on mouse/touch,
