@@ -75,7 +75,7 @@ export default function LoginPage() {
           ) : (
             <button
               onClick={handleLogin}
-              className="flex h-[54px] w-full max-w-[320px] items-center justify-center gap-3 rounded-2xl border border-line bg-white text-[15.5px] font-semibold text-ink shadow-[0_2px_8px_rgba(21,22,27,0.05)] transition-transform active:scale-[.97]"
+              className="flex h-[54px] w-full max-w-[320px] items-center justify-center gap-3 rounded-2xl glass-card text-[15.5px] font-semibold text-ink shadow-[0_2px_8px_rgba(21,22,27,0.05)] transition-transform active:scale-[.97]"
             >
               <GoogleIcon />
               {t("login.google")}

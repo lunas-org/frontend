@@ -112,7 +112,7 @@ export default function MerchantDashboardPage() {
           </div>
           <button
             onClick={() => router.push("/settings")}
-            className="flex h-[42px] w-[42px] items-center justify-center overflow-hidden rounded-full border border-line bg-white transition-transform active:scale-95"
+            className="flex h-[42px] w-[42px] items-center justify-center overflow-hidden rounded-full glass-card transition-transform active:scale-95"
           >
             {avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -180,7 +180,7 @@ export default function MerchantDashboardPage() {
               ) : (
                 <div className="flex flex-col gap-2.5">
                   {orders.map((o) => (
-                    <div key={o.id} className="flex items-center gap-3.5 rounded-2xl border border-line bg-white px-4 py-3.5">
+                    <div key={o.id} className="flex items-center gap-3.5 rounded-2xl glass-card px-4 py-3.5">
                       <div
                         className={`flex h-[38px] w-[38px] flex-none items-center justify-center rounded-xl ${
                           o.status === "paid" ? "bg-success/10" : "bg-black/[.05]"

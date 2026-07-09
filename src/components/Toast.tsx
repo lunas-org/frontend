@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle, Info, WarningCircle } from "@phosphor-icons/react/dist/ssr";
 
 type Variant = "success" | "info" | "error";
-type ToastItem = { id: number; message: string; variant: Variant };
+type ToastItem = { id: number; message: string; variant: Variant; leaving?: boolean };
 
 let items: ToastItem[] = [];
 const listeners = new Set<(items: ToastItem[]) => void>();
@@ -22,9 +22,14 @@ export function toast(message: string, variant: Variant = "success") {
   const id = nextId++;
   items = [...items, { id, message, variant }];
   emit();
+  // Fade out (mark leaving so it animates) before actually removing, so toasts don't just pop.
   setTimeout(() => {
-    items = items.filter((t) => t.id !== id);
+    items = items.map((t) => (t.id === id ? { ...t, leaving: true } : t));
     emit();
+    setTimeout(() => {
+      items = items.filter((t) => t.id !== id);
+      emit();
+    }, 240);
   }, 2600);
 }
 
@@ -54,8 +59,12 @@ export function Toaster() {
           return (
             <div
               key={t.id}
-              className="pointer-events-auto flex w-full items-center gap-2.5 rounded-2xl border border-line bg-white px-4 py-3 shadow-[0_10px_30px_rgba(21,22,27,0.12)]"
-              style={{ animation: "fadeUp .28s cubic-bezier(.2,.7,.3,1) both" }}
+              className="pointer-events-auto flex w-full items-center gap-2.5 rounded-2xl glass-card px-4 py-3 shadow-[0_10px_30px_rgba(21,22,27,0.12)]"
+              style={{
+                animation: t.leaving
+                  ? "toastOut .24s ease forwards"
+                  : "fadeUp .28s cubic-bezier(.2,.7,.3,1) both",
+              }}
             >
               <Icon weight="fill" className={`flex-none text-[19px] ${TONES[t.variant]}`} />
               <span className="text-[13.5px] font-semibold text-ink">{t.message}</span>

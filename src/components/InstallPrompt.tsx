@@ -48,7 +48,7 @@ export function InstallPrompt() {
   return (
     <div className="absolute inset-x-0 bottom-[76px] z-40 flex justify-center px-4">
       <div
-        className="flex w-full items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3 shadow-[0_10px_30px_rgba(21,22,27,0.12)]"
+        className="flex w-full items-center gap-3 rounded-2xl glass-card px-4 py-3 shadow-[0_10px_30px_rgba(21,22,27,0.12)]"
         style={{ animation: "fadeUp .3s cubic-bezier(.2,.7,.3,1) both" }}
       >
         <Image src="/icon.png" alt="" width={36} height={36} className="flex-none" />

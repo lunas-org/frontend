@@ -201,7 +201,7 @@ function CheckoutContent() {
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
       <SecuredHeader onBack={handleBack} />
       <div className="flex flex-col items-center gap-1.5 py-1.5 text-center">
-        <div className="flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-full border border-line bg-white">
+        <div className="flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-full glass-card">
           <Storefront className="text-2xl text-muted" />
         </div>
         <p className="mt-1.5 text-[13.5px] text-muted">
@@ -216,7 +216,7 @@ function CheckoutContent() {
         )}
       </div>
 
-      <div className="mt-[18px] flex flex-col items-center gap-3 rounded-[22px] border border-line bg-white p-[26px] shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
+      <div className="mt-[18px] flex flex-col items-center gap-3 rounded-[22px] glass-card p-[26px] shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
         <QRCodeSVG value={isDemo ? "https://lunas.app/demo" : address!} size={200} />
         <p className="text-center text-[13.5px] text-muted">{t("checkout.scan")}</p>
         {!isDemo && address && (
@@ -320,7 +320,7 @@ function ProcessingScreen({
             </span>
           </p>
         </div>
-        <div className="flex items-center gap-3 rounded-2xl border border-line bg-white px-[18px] py-3">
+        <div className="flex items-center gap-3 rounded-2xl glass-card px-[18px] py-3">
           <span className="text-[13px] text-muted">{productName}</span>
           <span className="font-display text-[14.5px] font-bold text-ink">{productPrice} USDC</span>
         </div>
@@ -350,7 +350,7 @@ function PendingScreen({ productName, productPrice }: { productName: string; pro
             </span>
           </p>
         </div>
-        <div className="flex items-center gap-3 rounded-2xl border border-line bg-white px-[18px] py-3">
+        <div className="flex items-center gap-3 rounded-2xl glass-card px-[18px] py-3">
           <span className="text-[13px] text-muted">{productName}</span>
           <span className="font-display text-[14.5px] font-bold text-ink">{productPrice} USDC</span>
         </div>
@@ -446,7 +446,7 @@ function SuccessScreen({
           <p className="mt-2 text-[14.5px] text-muted">{t("checkout.successSub")}</p>
         </div>
         <div
-          className="w-full max-w-[320px] rounded-2xl border border-line bg-white p-[22px] shadow-[0_6px_24px_rgba(21,22,27,0.05)] animate-fade-up"
+          className="w-full max-w-[320px] rounded-2xl glass-card p-[22px] shadow-[0_6px_24px_rgba(21,22,27,0.05)] animate-fade-up"
           style={{ animationDelay: ".65s" }}
         >
           <Row label={t("checkout.paidTo")} value={merchantName} />
@@ -503,7 +503,7 @@ function ExpiredScreen({ waTarget, onBack }: { waTarget: string | null; onBack?:
             href={`https://wa.me/${waTarget}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex h-[46px] items-center gap-2 rounded-[13px] border border-line bg-white px-[22px] text-sm font-semibold text-ink transition-transform active:scale-95"
+            className="flex h-[46px] items-center gap-2 rounded-[13px] glass-card px-[22px] text-sm font-semibold text-ink transition-transform active:scale-95"
           >
             <WhatsappLogo weight="fill" className="text-lg text-success" />
             {t("checkout.messageSeller")}
@@ -539,7 +539,7 @@ function AlreadyPaidScreen({
         </div>
         <button
           onClick={onView}
-          className="flex h-[46px] items-center rounded-[13px] border border-line bg-white px-[22px] text-sm font-semibold text-ink transition-transform active:scale-95"
+          className="flex h-[46px] items-center rounded-[13px] glass-card px-[22px] text-sm font-semibold text-ink transition-transform active:scale-95"
         >
           {t("checkout.viewReceiptShort")}
         </button>
@@ -579,7 +579,7 @@ function UnderpaidScreen({
             {t("checkout.almostDesc", { received: receivedAmount, remaining, total: productPrice })}
           </p>
         </div>
-        <div className="w-full max-w-[320px] rounded-2xl border border-line bg-white p-[22px] shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
+        <div className="w-full max-w-[320px] rounded-2xl glass-card p-[22px] shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
           <Row label={t("checkout.received")} value={`${receivedAmount} USDC`} mono />
           <Row label={t("checkout.stillNeeded")} value={`${remaining} USDC`} mono />
         </div>
@@ -594,7 +594,7 @@ function UnderpaidScreen({
             href={`https://wa.me/${waTarget}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex h-[46px] items-center gap-2 rounded-[13px] border border-line bg-white px-[22px] text-sm font-semibold text-ink transition-transform active:scale-95"
+            className="flex h-[46px] items-center gap-2 rounded-[13px] glass-card px-[22px] text-sm font-semibold text-ink transition-transform active:scale-95"
           >
             <WhatsappLogo weight="fill" className="text-lg text-success" />
             {t("checkout.askHelp")}

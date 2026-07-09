@@ -102,7 +102,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-3.5 rounded-[22px] border border-line bg-white p-6 shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
+        <div className="flex flex-col items-center gap-3.5 rounded-[22px] glass-card p-6 shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
           <QRCodeSVG value={checkoutUrl} size={210} />
           <p className="text-center text-[13px] text-muted">{t("detail.scan")}</p>
         </div>
@@ -110,7 +110,7 @@ export default function ProductDetailPage() {
         <div className="mt-4 flex gap-2.5">
           <button
             onClick={handleCopy}
-            className={`flex h-[50px] flex-1 items-center justify-center gap-2 rounded-[13px] border border-line bg-white text-sm font-semibold transition-transform hover:bg-black/[.03] active:scale-95 ${
+            className={`flex h-[50px] flex-1 items-center justify-center gap-2 rounded-[13px] glass-card text-sm font-semibold transition-transform hover:bg-black/[.03] active:scale-95 ${
               copied ? "text-success" : "text-ink"
             }`}
           >

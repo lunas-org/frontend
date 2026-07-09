@@ -80,7 +80,7 @@ export default function SettingsPage() {
           <LanguageToggle />
         </div>
 
-        <div className="mt-2 flex items-center gap-4 rounded-[18px] border border-line bg-white p-[18px]">
+        <div className="mt-2 flex items-center gap-4 rounded-[18px] glass-card p-[18px]">
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
           <button
             onClick={() => fileRef.current?.click()}
@@ -105,7 +105,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="mt-3.5 flex flex-col gap-1.5 rounded-[18px] border border-line bg-white p-[18px]">
+        <div className="mt-3.5 flex flex-col gap-1.5 rounded-[18px] glass-card p-[18px]">
           <label className="text-[13px] font-semibold text-ink">
             {t("profile.waLabel")} <span className="font-normal text-muted">· {t("profile.optional")}</span>
           </label>
@@ -125,7 +125,7 @@ export default function SettingsPage() {
             <button
               key={p.id}
               onClick={() => router.push(`/products/${p.id}`)}
-              className="flex w-full items-center gap-3.5 rounded-[15px] border border-line bg-white px-4 py-[15px] text-left transition-transform hover:border-primary/30 active:scale-[.98]"
+              className="flex w-full items-center gap-3.5 rounded-[15px] glass-card px-4 py-[15px] text-left transition-transform hover:border-primary/30 active:scale-[.98]"
             >
               <div className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-xl bg-primary/[.07]">
                 <Tag className="text-[17px] text-primary" />
@@ -143,7 +143,7 @@ export default function SettingsPage() {
         <p className="mb-2.5 mt-[26px] text-xs font-semibold uppercase tracking-[.1em] text-muted">{t("settings.account")}</p>
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-[15px] border border-line bg-white px-4 py-[15px] text-sm font-semibold text-danger transition-transform active:scale-[.98]"
+          className="flex w-full items-center gap-3 rounded-[15px] glass-card px-4 py-[15px] text-sm font-semibold text-danger transition-transform active:scale-[.98]"
         >
           <SignOut className="text-lg" />
           {t("settings.logout")}

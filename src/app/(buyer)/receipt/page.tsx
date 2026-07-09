@@ -62,7 +62,7 @@ function ReceiptContent() {
           <p className="mt-1.5 text-[14px] text-muted">{t("receipt.paidInFull", { date: dateLabel })}</p>
         </div>
 
-        <div className="w-full max-w-[340px] rounded-2xl border border-line bg-white p-[22px] shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
+        <div className="w-full max-w-[340px] rounded-2xl glass-card p-[22px] shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
           <Row label={t("receipt.paidTo")} value={merchantName} />
           <Row label={t("receipt.for")} value={productName} />
           <div className="flex items-start justify-between py-1.5 text-[13.5px]">

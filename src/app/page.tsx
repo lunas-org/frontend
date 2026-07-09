@@ -174,7 +174,7 @@ function HowStep({
   accent?: boolean;
 }) {
   return (
-    <div className="flex items-start gap-4 rounded-2xl border border-line bg-white p-[18px]">
+    <div className="flex items-start gap-4 rounded-2xl glass-card p-[18px]">
       <div
         className={`flex h-10 w-10 flex-none items-center justify-center rounded-xl text-[21px] ${
           accent ? "bg-success/10 text-success" : "bg-primary/[.08] text-primary"
@@ -192,7 +192,7 @@ function HowStep({
 
 function WhyCard({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
-    <div className="flex flex-col gap-2 rounded-2xl border border-line bg-white p-4">
+    <div className="flex flex-col gap-2 rounded-2xl glass-card p-4">
       <span className="text-[22px] text-primary">{icon}</span>
       <p className="font-display text-[14.5px] font-bold text-ink">{title}</p>
       <p className="text-[12.5px] leading-snug text-muted">{desc}</p>
@@ -202,7 +202,7 @@ function WhyCard({ icon, title, desc }: { icon: React.ReactNode; title: string; 
 
 function Faq({ q, a }: { q: string; a: string }) {
   return (
-    <details className="group rounded-[14px] border border-line bg-white px-[18px] py-4">
+    <details className="group rounded-[14px] glass-card px-[18px] py-4">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[14.5px] font-semibold text-ink [&::-webkit-details-marker]:hidden">
         {q}
         <CaretDown className="flex-none text-base text-muted transition-transform duration-200 group-open:rotate-180" />

@@ -30,6 +30,17 @@ body {
   .font-display {
     font-family: var(--font-display), sans-serif;
   }
+  /* Liquid-glass card surface — translucent white + a light backdrop blur + a 1px top sheen,
+     so cards read as frosted, layered panels over the cream background instead of flat white.
+     Kept subtle ("tipis") so text stays crisp and the calm look holds. Replaces the old
+     `glass-card` recipe; radius/padding/hover stay on the element. */
+  .glass-card {
+    background-color: rgba(255, 255, 255, 0.6);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    backdrop-filter: blur(14px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 4px 20px rgba(21, 22, 27, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
 }
 
 /* Keyboard focus ring — only shows for keyboard users (:focus-visible), never on mouse/touch,
@@ -74,6 +85,10 @@ body {
 @keyframes blinkDot {
   0%, 80%, 100% { opacity: .25; }
   40% { opacity: 1; }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(-6px) scale(.97); }
 }
 @keyframes floatY {
   0%, 100% { transform: translateY(0); }

@@ -181,7 +181,7 @@ export default function NewProductPage() {
 
         <div className="mt-[26px]">
           <p className="mb-2.5 text-xs font-semibold uppercase tracking-[.1em] text-muted">{t("newProduct.buyersSee")}</p>
-          <div className="flex items-center gap-3.5 rounded-[18px] border border-line bg-white p-5 shadow-[0_4px_16px_rgba(21,22,27,0.04)]">
+          <div className="flex items-center gap-3.5 rounded-[18px] glass-card p-5 shadow-[0_4px_16px_rgba(21,22,27,0.04)]">
             <div className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-primary/[.07]">
               <Tag className="text-xl text-primary" />
             </div>

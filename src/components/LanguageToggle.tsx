@@ -10,7 +10,7 @@ export function LanguageToggle({ className = "" }: { className?: string }) {
   const options: Locale[] = ["en", "id"];
 
   return (
-    <div className={`inline-flex rounded-full border border-line bg-white p-0.5 ${className}`}>
+    <div className={`inline-flex rounded-full glass-card p-0.5 ${className}`}>
       {options.map((l) => {
         const active = locale === l;
         return (

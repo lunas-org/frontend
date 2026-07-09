@@ -105,7 +105,7 @@ export default function NotificationsPage() {
           const paid = f.kind === "paid";
           const Icon = paid ? CheckCircle : Tag;
           return (
-            <div key={f.id} className="flex items-center gap-3.5 rounded-2xl border border-line bg-white px-4 py-3.5">
+            <div key={f.id} className="flex items-center gap-3.5 rounded-2xl glass-card px-4 py-3.5">
               <div
                 className={`flex h-[38px] w-[38px] flex-none items-center justify-center rounded-xl ${
                   paid ? "bg-success/10" : "bg-primary/[.07]"
