@@ -112,16 +112,19 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
+function ReceiptFallback() {
+  const { t } = useI18n();
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <p className="text-muted">{t("common.loading")}</p>
+    </div>
+  );
+}
+
 export default function ReceiptPage() {
   return (
     <Frame>
-      <Suspense
-        fallback={
-          <div className="flex min-h-screen items-center justify-center">
-            <p className="text-muted">Loading…</p>
-          </div>
-        }
-      >
+      <Suspense fallback={<ReceiptFallback />}>
         <ReceiptContent />
       </Suspense>
     </Frame>

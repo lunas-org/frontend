@@ -65,7 +65,9 @@ export default function ProductDetailPage() {
   }
 
   const paidCount = orders.filter((o) => o.status === "paid").length;
-  const whatsappText = encodeURIComponent(`Pay for "${product.title}" ($${product.priceUsd}): ${checkoutUrl}`);
+  const whatsappText = encodeURIComponent(
+    t("detail.waShare", { title: product.title, price: product.priceUsd, url: checkoutUrl })
+  );
   const shortLink = checkoutUrl.replace(/^https?:\/\//, "").replace(/\?.*$/, `/${product.id.slice(0, 8)}`);
 
   return (

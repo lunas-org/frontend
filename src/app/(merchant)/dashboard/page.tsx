@@ -79,7 +79,7 @@ export default function MerchantDashboardPage() {
   }, [router]);
 
   function productTitle(productId: string) {
-    return products.find((p) => p.id === productId)?.title ?? "Product";
+    return products.find((p) => p.id === productId)?.title ?? t("common.product");
   }
   function productPrice(productId: string) {
     return products.find((p) => p.id === productId)?.priceUsd ?? "0.00";

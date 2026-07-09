@@ -19,6 +19,7 @@ const en = {
   "common.loading": "Loading…",
   "common.securedBy": "Secured by Lunas",
   "common.tryAgain": "Try again",
+  "common.product": "Product",
 
   "lang.label": "Language",
   "lang.en": "EN",
@@ -129,6 +130,7 @@ const en = {
   "detail.copied": "Copied",
   "detail.whatsapp": "WhatsApp",
   "detail.preview": "Preview as buyer",
+  "detail.waShare": 'Pay for "{title}" ({price} USDC): {url}',
 
   "activity.title": "Activity",
   "activity.events": "{count} events",
@@ -219,6 +221,7 @@ const id: Record<Key, string> = {
   "common.loading": "Memuat…",
   "common.securedBy": "Diamankan oleh Lunas",
   "common.tryAgain": "Coba lagi",
+  "common.product": "Produk",
 
   "lang.label": "Bahasa",
   "lang.en": "EN",
@@ -329,6 +332,7 @@ const id: Record<Key, string> = {
   "detail.copied": "Tersalin",
   "detail.whatsapp": "WhatsApp",
   "detail.preview": "Pratinjau sebagai pembeli",
+  "detail.waShare": 'Bayar untuk "{title}" ({price} USDC): {url}',
 
   "activity.title": "Aktivitas",
   "activity.events": "{count} kejadian",

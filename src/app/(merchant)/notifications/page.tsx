@@ -17,7 +17,6 @@ import { useI18n } from "@/lib/i18n";
 type Feed = {
   id: string;
   kind: "paid" | "created";
-  title: string;
   subtitle: string;
   amount?: string;
   ts: number;
@@ -63,8 +62,7 @@ export default function NotificationsPage() {
           items.push({
             id: `paid-${o.id}`,
             kind: "paid",
-            title: "Payment received — Lunas ✓",
-            subtitle: p?.title ?? "Product",
+            subtitle: p?.title ?? "",
             amount: p?.priceUsd,
             ts: o.paidAt ?? o.createdAt,
           });
@@ -74,7 +72,6 @@ export default function NotificationsPage() {
         items.push({
           id: `created-${p.id}`,
           kind: "created",
-          title: "Payment link created",
           subtitle: p.title,
           ts: p.createdAt,
         });
@@ -121,7 +118,7 @@ export default function NotificationsPage() {
                   {t(paid ? "activity.paidTitle" : "activity.createdTitle")}
                 </p>
                 <p className="mt-0.5 truncate text-xs text-muted">
-                  {f.subtitle} · {relativeTime(f.ts)}
+                  {f.subtitle || t("common.product")} · {relativeTime(f.ts)}
                 </p>
               </div>
               {f.amount && <span className="font-display whitespace-nowrap text-[14.5px] font-bold text-success">+{f.amount}</span>}

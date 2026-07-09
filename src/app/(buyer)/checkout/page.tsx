@@ -607,16 +607,19 @@ function UnsupportedTokenScreen({
   );
 }
 
+function CheckoutFallback() {
+  const { t } = useI18n();
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <p className="text-muted">{t("common.loading")}</p>
+    </div>
+  );
+}
+
 export default function CheckoutPage() {
   return (
     <Frame>
-      <Suspense
-        fallback={
-          <div className="flex min-h-screen items-center justify-center">
-            <p className="text-muted">Loading...</p>
-          </div>
-        }
-      >
+      <Suspense fallback={<CheckoutFallback />}>
         <CheckoutContent />
       </Suspense>
     </Frame>
