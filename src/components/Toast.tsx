@@ -42,6 +42,7 @@ const TONES = {
 
 export function Toaster() {
   const [list, setList] = useState<ToastItem[]>([]);
+  const [offline, setOffline] = useState(false);
 
   useEffect(() => {
     listeners.add(setList);
@@ -51,9 +52,25 @@ export function Toaster() {
     };
   }, []);
 
+  // Push toasts below the offline banner when it's showing, so they don't overlap it.
+  useEffect(() => {
+    const update = () => setOffline(!navigator.onLine);
+    update();
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+
   return (
     <div className="pointer-events-none fixed inset-x-0 top-0 z-[60] flex justify-center">
-      <div className="flex w-full max-w-[430px] flex-col items-center gap-2 px-4 pt-[calc(12px+env(safe-area-inset-top))]">
+      <div
+        className={`flex w-full max-w-[430px] flex-col items-center gap-2 px-4 ${
+          offline ? "pt-[calc(52px+env(safe-area-inset-top))]" : "pt-[calc(12px+env(safe-area-inset-top))]"
+        }`}
+      >
         {list.map((t) => {
           const Icon = ICONS[t.variant];
           return (

@@ -82,7 +82,7 @@ export default function Home() {
             </Link>
             <Link
               href="/checkout?demo=1&title=Workshop+ticket&price=25.00&merchant=Studio+Mira"
-              className="flex h-[52px] items-center justify-center rounded-2xl border border-line bg-transparent text-[15px] font-medium text-ink transition-colors hover:bg-black/[.04] active:scale-[.97]"
+              className="glass-card flex h-[52px] items-center justify-center rounded-2xl text-[15px] font-medium text-ink transition-transform active:scale-[.97]"
             >
               {t("landing.seeCheckout")}
             </Link>

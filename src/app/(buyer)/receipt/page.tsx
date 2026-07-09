@@ -14,6 +14,7 @@ import { Frame } from "@/components/Frame";
 import { toast } from "@/components/Toast";
 import { idrEstimate } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
+import { CalmLoader } from "@/components/CalmLoader";
 
 function ReceiptContent() {
   const params = useSearchParams();
@@ -116,7 +117,7 @@ function ReceiptFallback() {
   const { t } = useI18n();
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <p className="text-muted">{t("common.loading")}</p>
+      <CalmLoader label={t("common.loading")} />
     </div>
   );
 }

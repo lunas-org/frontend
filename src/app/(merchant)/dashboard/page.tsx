@@ -134,9 +134,9 @@ export default function MerchantDashboardPage() {
         ) : (
           <>
             <div className="px-[22px] pt-4">
-              <div className="relative overflow-hidden rounded-[20px] bg-primary px-6 py-[26px] text-white">
-                <div className="absolute -bottom-[38px] -right-[30px] h-[150px] w-[150px] rounded-full bg-white/5" />
-                <div className="absolute -bottom-3.5 right-3.5 h-[74px] w-[74px] rounded-full bg-mint/10" />
+              <div className="glass-panel rounded-[20px] px-6 py-[26px]">
+                <div className="pointer-events-none absolute -bottom-[38px] -right-[30px] h-[150px] w-[150px] rounded-full bg-white/10 blur-2xl" />
+                <div className="pointer-events-none absolute -bottom-3.5 right-3.5 h-[74px] w-[74px] rounded-full bg-mint/20 blur-2xl" />
                 <p className="relative text-[12.5px] text-white/65">{t("dashboard.balance")}</p>
                 <p className="font-display relative mt-1.5 text-[38px] font-extrabold leading-none tracking-tight">
                   {balance ?? "0.00"} <span className="text-base font-semibold text-white/60">USDC</span>
