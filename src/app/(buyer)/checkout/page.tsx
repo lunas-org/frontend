@@ -76,6 +76,11 @@ function CheckoutContent() {
   const chainId = params.get("chainId");
   const merchantName = params.get("merchant") || t("checkout.defaultBusiness");
   const waTarget = params.get("wa");
+  // Reveal-the-magic line (CLAUDE.md §9): briefly names the source chain the SRA just routed
+  // from, right before "Lunas ✓". Reads as reassurance to the buyer, reads as cross-chain to
+  // judges. `sourceChain` isn't wired from the SRA route yet on the real path (no event/webhook
+  // surfaces it today) — demo mode hardcodes "Base" to match the CLAUDE.md §11 demo script.
+  const sourceChain = isDemo ? "Base" : params.get("sourceChain");
 
   const [screen, setScreen] = useState<Screen>("checkout");
   const [lastChecked, setLastChecked] = useState<number | null>(null);
@@ -183,7 +188,7 @@ function CheckoutContent() {
   }
 
   if (screen === "pending") {
-    return <PendingScreen productName={displayTitle} productPrice={displayPrice} />;
+    return <PendingScreen productName={displayTitle} productPrice={displayPrice} sourceChain={sourceChain} />;
   }
 
   if (screen === "success") {
@@ -331,7 +336,15 @@ function ProcessingScreen({
   );
 }
 
-function PendingScreen({ productName, productPrice }: { productName: string; productPrice: string }) {
+function PendingScreen({
+  productName,
+  productPrice,
+  sourceChain,
+}: {
+  productName: string;
+  productPrice: string;
+  sourceChain?: string | null;
+}) {
   const { t } = useI18n();
   return (
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-in">
@@ -342,14 +355,20 @@ function PendingScreen({ productName, productPrice }: { productName: string; pro
           <p className="font-display mb-1.5 text-2xl font-extrabold tracking-tight text-ink">
             {t("checkout.pendingTitle")}
           </p>
-          <p className="inline-flex items-center gap-1.5 text-sm text-muted">
-            {t("checkout.pendingSub")}
-            <span className="flex gap-[3px]">
-              <span className="dot-blink h-1 w-1 rounded-full bg-muted" />
-              <span className="dot-blink h-1 w-1 rounded-full bg-muted" style={{ animationDelay: ".2s" }} />
-              <span className="dot-blink h-1 w-1 rounded-full bg-muted" style={{ animationDelay: ".4s" }} />
-            </span>
-          </p>
+          {sourceChain ? (
+            <p className="animate-fade-up text-sm font-medium text-success">
+              {t("checkout.receivedFrom", { chain: sourceChain })}
+            </p>
+          ) : (
+            <p className="inline-flex items-center gap-1.5 text-sm text-muted">
+              {t("checkout.pendingSub")}
+              <span className="flex gap-[3px]">
+                <span className="dot-blink h-1 w-1 rounded-full bg-muted" />
+                <span className="dot-blink h-1 w-1 rounded-full bg-muted" style={{ animationDelay: ".2s" }} />
+                <span className="dot-blink h-1 w-1 rounded-full bg-muted" style={{ animationDelay: ".4s" }} />
+              </span>
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-3 rounded-2xl glass-card px-[18px] py-3">
           <span className="text-[13px] text-muted">{productName}</span>
