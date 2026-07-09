@@ -72,7 +72,7 @@ export default function NewProductPage() {
       | undefined;
     if (!checkoutAddress) {
       setError(
-        "Checkout.sol hasn't been deployed to Arbitrum One (mainnet) yet. SRA needs a real mainnet contract address — deploy it first, then set NEXT_PUBLIC_CHECKOUT_CONTRACT_ADDRESS_MAINNET."
+        "Checkout.sol hasn't been deployed to Arbitrum One (mainnet) yet. SRA needs a real mainnet contract address. Deploy it first, then set NEXT_PUBLIC_CHECKOUT_CONTRACT_ADDRESS_MAINNET."
       );
       setStatus("error");
       return;

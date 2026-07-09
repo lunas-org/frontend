@@ -35,7 +35,7 @@ function ReceiptContent() {
 
   async function share() {
     const url = window.location.href;
-    const text = `Lunas ✓ receipt — ${price} USDC paid to ${merchantName} for "${productName}" (${receipt}).`;
+    const text = `Lunas ✓ receipt · ${price} USDC paid to ${merchantName} for "${productName}" (${receipt}).`;
     try {
       if (navigator.share) {
         await navigator.share({ title: "Lunas receipt", text, url });

@@ -388,7 +388,7 @@ function SuccessScreen({
 
   async function shareReceipt() {
     const url = receiptUrl();
-    const text = `Lunas ✓ — paid ${productPrice} USDC to ${merchantName} for "${productName}". Receipt ${receipt}.`;
+    const text = `Lunas ✓ · paid ${productPrice} USDC to ${merchantName} for "${productName}". Receipt ${receipt}.`;
     try {
       if (navigator.share) {
         await navigator.share({ title: "Lunas receipt", text, url });
