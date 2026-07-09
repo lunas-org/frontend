@@ -123,7 +123,7 @@ export default function NewProductPage() {
   }
 
   return (
-      <form onSubmit={handleSubmit} className="flex min-h-screen flex-col px-6 pb-6 animate-fade-up">
+      <form onSubmit={handleSubmit} className="flex min-h-screen flex-col px-6 pb-6">
         <div className="flex items-center gap-2 py-3.5">
           <button
             type="button"

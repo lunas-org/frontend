@@ -74,7 +74,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen px-6 pb-[92px] animate-fade-up">
+    <div className="min-h-screen px-6 pb-[92px]">
         <div className="flex items-center justify-between py-3.5">
           <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">{t("settings.title")}</h1>
           <LanguageToggle />

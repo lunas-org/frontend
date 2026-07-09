@@ -41,7 +41,7 @@ export default function LoginPage() {
   }
 
   return (
-      <div className="flex min-h-screen flex-col animate-fade-up">
+      <div className="flex min-h-screen flex-col">
         <div className="flex items-center justify-between p-3.5">
           <button
             onClick={() => router.push("/")}

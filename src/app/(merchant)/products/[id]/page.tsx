@@ -71,7 +71,7 @@ export default function ProductDetailPage() {
   const shortLink = checkoutUrl.replace(/^https?:\/\//, "").replace(/\?.*$/, `/${product.id.slice(0, 8)}`);
 
   return (
-      <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
+      <div className="flex min-h-screen flex-col px-6 pb-7">
         <div className="flex items-center gap-2 py-3.5">
           <button
             onClick={() => router.push("/dashboard")}

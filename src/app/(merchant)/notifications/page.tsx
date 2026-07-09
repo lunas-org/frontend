@@ -84,7 +84,7 @@ export default function NotificationsPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen px-6 pb-[92px] animate-fade-up">
+    <div className="min-h-screen px-6 pb-[92px]">
       <div className="flex items-baseline justify-between py-5">
         <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">{t("activity.title")}</h1>
         {feed.length > 0 && <span className="text-[12.5px] text-muted">{t("activity.events", { count: feed.length })}</span>}

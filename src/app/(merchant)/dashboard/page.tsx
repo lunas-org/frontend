@@ -104,7 +104,7 @@ export default function MerchantDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen pb-[92px] animate-fade-up">
+    <div className="min-h-screen pb-[92px]">
         <div className="flex items-center justify-between px-[22px] pb-1.5 pt-5">
           <div>
             <p className="text-[12.5px] text-muted">{t("dashboard.greeting")}</p>

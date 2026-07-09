@@ -60,7 +60,7 @@ export default function ProfileSetupPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col p-6 animate-fade-up">
+    <div className="flex min-h-screen flex-col p-6">
         <div className="flex flex-col items-center gap-1.5 py-6 text-center">
           <Image src="/hello-wave.png" alt="" width={132} height={132} className="animate-float" />
           <h1 className="font-display mt-1 text-[28px] font-extrabold tracking-tight text-ink">

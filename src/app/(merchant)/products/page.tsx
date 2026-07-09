@@ -45,7 +45,7 @@ export default function ProductsListPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen px-6 pb-[92px] animate-fade-up">
+    <div className="min-h-screen px-6 pb-[92px]">
         <div className="flex items-center justify-between py-5">
           <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">{t("products.title")}</h1>
           <button
