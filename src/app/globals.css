@@ -60,6 +60,21 @@ body {
       linear-gradient(150deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 46%),
       linear-gradient(180deg, #423b9c, #2d2766);
   }
+  /* Premium navy glass panel — for hero surfaces (pricing, balance): a deep navy gradient with a
+     soft top-left specular glow, a bright rim, an inner top highlight, and a large ambient shadow.
+     Pairs with a couple of blurred glow blobs inside for the "liquid" depth. */
+  .glass-panel {
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    background-image:
+      radial-gradient(120% 85% at 18% 0%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 55%),
+      linear-gradient(158deg, #423b93, #241f4d);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow:
+      0 18px 44px rgba(31, 26, 74, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
 }
 
 /* Keyboard focus ring — only shows for keyboard users (:focus-visible), never on mouse/touch,

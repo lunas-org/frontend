@@ -116,10 +116,12 @@ export default function Home() {
 
         <section className="border-t border-line px-6 py-9">
           <p className="mb-5 text-center text-xs font-semibold uppercase tracking-[.12em] text-muted">{t("landing.pricingTitle")}</p>
-          <div className="rounded-[20px] bg-primary px-6 py-7 text-center text-white">
-            <p className="font-display text-[44px] font-extrabold tracking-tight">1%</p>
-            <p className="mt-1.5 text-[14.5px] text-white/75">{t("landing.pricingPer")}</p>
-            <p className="mt-3.5 text-[12.5px] text-white/55">{t("landing.pricingSub")}</p>
+          <div className="glass-panel rounded-[22px] px-6 py-8 text-center">
+            <div className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+            <div className="pointer-events-none absolute -bottom-12 -left-8 h-36 w-36 rounded-full bg-mint/20 blur-2xl" />
+            <p className="font-display relative text-[48px] font-extrabold leading-none tracking-tight">1%</p>
+            <p className="relative mt-2 text-[14.5px] text-white/80">{t("landing.pricingPer")}</p>
+            <p className="relative mt-3.5 text-[12.5px] text-white/55">{t("landing.pricingSub")}</p>
           </div>
         </section>
 
