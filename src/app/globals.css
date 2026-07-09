@@ -124,6 +124,10 @@ body {
   from { opacity: 1; transform: translateY(0) scale(1); }
   to { opacity: 0; transform: translateY(-6px) scale(.97); }
 }
+@keyframes bump {
+  0%, 100% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+}
 @keyframes floatY {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
@@ -139,6 +143,7 @@ body {
 .animate-pop-in { animation: popIn .5s cubic-bezier(.2,1.4,.4,1) both; }
 .animate-float { animation: floatY 4s ease-in-out infinite; }
 .animate-breathe { animation: breathe 2s ease-in-out infinite; }
+.animate-bump { animation: bump .5s ease; }
 .skeleton {
   background: linear-gradient(100deg, rgba(21,22,27,0.06) 40%, rgba(21,22,27,0.03) 50%, rgba(21,22,27,0.06) 60%);
   background-size: 250% 100%;

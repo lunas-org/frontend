@@ -9,13 +9,23 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { createPublicClient, http } from "viem";
+import { arbitrum, arbitrumSepolia } from "viem/chains";
 import { Plus, ArrowCircleUp, Check, User } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn, getMagicProvider } from "@/lib/magic";
 import { createSmartAccountFromProvider, getUsdcBalance } from "@/lib/zerodev";
-import { listOrders, listProducts, getProfile, type Order, type Product } from "@/lib/store";
+import { listOrders, listProducts, markOrderPaid, getProfile, type Order, type Product } from "@/lib/store";
+import { checkoutAbi } from "@/lib/checkoutAbi";
+import { toast } from "@/components/Toast";
 import { useI18n } from "@/lib/i18n";
 
+const POLL_INTERVAL_MS = 7000;
+
 type Status = "loading" | "error" | "ready";
+
+function chainById(chainId: number) {
+  return chainId === arbitrum.id ? arbitrum : arbitrumSepolia;
+}
 
 function relativeTime(ms: number) {
   const d = new Date(ms);
@@ -40,6 +50,8 @@ export default function MerchantDashboardPage() {
   const [balance, setBalance] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
+  const [address, setAddress] = useState<`0x${string}` | null>(null);
+  const [bumpKey, setBumpKey] = useState(0);
 
   const ranRef = useRef(false);
 
@@ -55,7 +67,8 @@ export default function MerchantDashboardPage() {
           return;
         }
         const provider = getMagicProvider();
-        const { address } = await createSmartAccountFromProvider(provider);
+        const { address: addr } = await createSmartAccountFromProvider(provider);
+        setAddress(addr);
 
         const profile = getProfile();
         if (profile?.displayName) setDisplayName(profile.displayName);
@@ -65,7 +78,7 @@ export default function MerchantDashboardPage() {
         setProducts(listProducts());
 
         try {
-          setBalance(await getUsdcBalance(address));
+          setBalance(await getUsdcBalance(addr));
         } catch {
           setBalance(null);
         }
@@ -77,6 +90,60 @@ export default function MerchantDashboardPage() {
       }
     })();
   }, [router]);
+
+  // Realtime: payment truth is on-chain (Checkout.sol.paid). Poll each pending order's paid()
+  // status and re-read the settled USDC balance on an interval, so an incoming payment flips the
+  // order to Lunas ✓, ticks the balance up, and fires a toast — all without a refresh. When there
+  // are no pending orders we still refresh the balance (funds could arrive against a paid order).
+  useEffect(() => {
+    if (!address) return;
+    let cancelled = false;
+
+    async function refresh() {
+      const pending = listOrders().filter((o) => o.status === "pending");
+      let settled = 0;
+      for (const o of pending) {
+        try {
+          const client = createPublicClient({ chain: chainById(o.chainId), transport: http() });
+          const isPaid = await client.readContract({
+            address: o.checkoutAddress,
+            abi: checkoutAbi,
+            functionName: "paid",
+            args: [o.id],
+          });
+          if (isPaid) {
+            markOrderPaid(o.id);
+            settled++;
+          }
+        } catch {
+          // transient RPC error — retry next tick
+        }
+      }
+      if (cancelled) return;
+
+      if (settled > 0) {
+        setOrders(listOrders());
+        toast(t("activity.paidTitle"));
+      }
+
+      try {
+        const next = await getUsdcBalance(address!);
+        if (cancelled) return;
+        setBalance((prev) => {
+          if (next && prev && parseFloat(next) > parseFloat(prev)) setBumpKey((k) => k + 1);
+          return next;
+        });
+      } catch {
+        // keep last known balance
+      }
+    }
+
+    const interval = setInterval(refresh, POLL_INTERVAL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [address, t]);
 
   function productTitle(productId: string) {
     return products.find((p) => p.id === productId)?.title ?? t("common.product");
@@ -138,7 +205,10 @@ export default function MerchantDashboardPage() {
                 <div className="pointer-events-none absolute -bottom-[38px] -right-[30px] h-[150px] w-[150px] rounded-full bg-white/10 blur-2xl" />
                 <div className="pointer-events-none absolute -bottom-3.5 right-3.5 h-[74px] w-[74px] rounded-full bg-mint/20 blur-2xl" />
                 <p className="relative text-[12.5px] text-white/65">{t("dashboard.balance")}</p>
-                <p className="font-display relative mt-1.5 text-[38px] font-extrabold leading-none tracking-tight">
+                <p
+                  key={bumpKey}
+                  className="font-display animate-bump relative mt-1.5 inline-block origin-left text-[38px] font-extrabold leading-none tracking-tight"
+                >
                   {balance ?? "0.00"} <span className="text-base font-semibold text-white/60">USDC</span>
                 </p>
                 <div className="relative mt-3.5 flex items-center gap-1.5 text-[12.5px] text-mint">
