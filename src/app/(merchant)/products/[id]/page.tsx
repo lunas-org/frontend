@@ -13,11 +13,13 @@ import { CalmLoader } from "@/components/CalmLoader";
 import { toast } from "@/components/Toast";
 import { idrEstimate } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
+import { useGuardedNav } from "@/lib/useGuardedNav";
 
 export default function ProductDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { t } = useI18n();
+  const { go, pending } = useGuardedNav();
   const [product, setProduct] = useState<Product | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
@@ -74,11 +76,12 @@ export default function ProductDetailPage() {
   const shortLink = checkoutUrl.replace(/^https?:\/\//, "").replace(/\?.*$/, `/${product.id.slice(0, 8)}`);
 
   return (
-      <div className="flex min-h-screen flex-col px-6 pb-7">
+      <div className="flex min-h-screen flex-col px-6 pb-7 @lg:mx-auto @lg:w-full @lg:max-w-[480px]">
         <div className="flex items-center gap-2 py-3.5">
           <button
-            onClick={() => router.push("/dashboard")}
-            className="-ml-2.5 flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-black/5 active:scale-95"
+            onClick={() => go("/dashboard")}
+            disabled={pending}
+            className="-ml-2.5 flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-black/5 active:scale-95 disabled:pointer-events-none disabled:opacity-60"
           >
             <ArrowLeft className="text-xl text-ink" />
           </button>
@@ -140,9 +143,10 @@ export default function ProductDetailPage() {
           onClick={() => {
             const previewUrl = new URL(checkoutUrl);
             previewUrl.searchParams.set("preview", "1");
-            router.push(previewUrl.toString());
+            go(previewUrl.toString());
           }}
-          className="flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-semibold text-muted transition-colors hover:bg-black/[.04] hover:text-ink"
+          disabled={pending}
+          className="flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-semibold text-muted transition-colors hover:bg-black/[.04] hover:text-ink disabled:pointer-events-none disabled:opacity-60"
         >
           <Eye className="text-lg" />
           {t("detail.preview")}
@@ -154,7 +158,7 @@ export default function ProductDetailPage() {
             onClick={() => setSent(false)}
           >
             <div
-              className="mb-4 w-[calc(100%-32px)] rounded-[24px] border border-line bg-paper p-6 text-center shadow-[0_20px_60px_rgba(21,22,27,0.22)]"
+              className="mb-4 w-[calc(100%-32px)] rounded-[24px] border border-line bg-paper p-6 text-center shadow-[0_20px_60px_rgba(21,22,27,0.22)] @lg:w-full @lg:max-w-[380px]"
               style={{ animation: "fadeUp .3s cubic-bezier(.2,.7,.3,1) both" }}
               onClick={(e) => e.stopPropagation()}
             >

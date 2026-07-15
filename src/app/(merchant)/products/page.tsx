@@ -13,10 +13,12 @@ import { isLoggedIn } from "@/lib/magic";
 import { listProducts, listOrders, type Product } from "@/lib/store";
 import { CalmLoader } from "@/components/CalmLoader";
 import { useI18n } from "@/lib/i18n";
+import { useGuardedNav } from "@/lib/useGuardedNav";
 
 export default function ProductsListPage() {
   const router = useRouter();
   const { t } = useI18n();
+  const { go, pending } = useGuardedNav();
   const [products, setProducts] = useState<Product[]>([]);
   const [paidCounts, setPaidCounts] = useState<Record<string, number>>({});
   const [ready, setReady] = useState(false);
@@ -45,12 +47,13 @@ export default function ProductsListPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen px-6 pb-[92px]">
+    <div className="min-h-screen px-6 pb-[92px] @md:pb-10">
         <div className="flex items-center justify-between py-5">
           <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">{t("products.title")}</h1>
           <button
-            onClick={() => router.push("/products/new")}
-            className="flex h-9 items-center gap-1.5 rounded-[10px] glass-btn px-3.5 text-[13px] font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
+            onClick={() => go("/products/new")}
+            disabled={pending}
+            className="flex h-9 items-center gap-1.5 rounded-[10px] glass-btn px-3.5 text-[13px] font-semibold text-white transition-opacity hover:opacity-90 active:scale-95 disabled:pointer-events-none disabled:opacity-60"
           >
             <Plus className="text-base" />
             {t("products.new")}
@@ -64,25 +67,27 @@ export default function ProductsListPage() {
         )}
 
         {ready && products.length === 0 && (
-          <div className="flex flex-col items-center gap-3.5 rounded-[20px] border border-dashed border-line bg-white px-6 py-9 text-center">
+          <div className="flex flex-col items-center gap-3.5 rounded-[20px] border border-dashed border-line bg-white px-6 py-9 text-center @lg:mx-auto @lg:max-w-[420px]">
             <Image src="/empty-products.png" alt="" width={128} height={128} className="animate-float" />
             <p className="font-display text-base font-bold text-ink">{t("products.emptyTitle")}</p>
             <p className="max-w-[230px] text-[13px] leading-relaxed text-muted">{t("products.emptyDesc")}</p>
             <button
-              onClick={() => router.push("/products/new")}
-              className="h-11 rounded-xl border border-primary/30 px-5 text-[13.5px] font-semibold text-primary transition-colors hover:bg-primary/[.06] active:scale-95"
+              onClick={() => go("/products/new")}
+              disabled={pending}
+              className="h-11 rounded-xl border border-primary/30 px-5 text-[13.5px] font-semibold text-primary transition-colors hover:bg-primary/[.06] active:scale-95 disabled:pointer-events-none disabled:opacity-60"
             >
               {t("products.emptyCta")}
             </button>
           </div>
         )}
 
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-2.5 @lg:grid @lg:grid-cols-2 @lg:gap-3">
           {products.map((p) => (
             <button
               key={p.id}
-              onClick={() => router.push(`/products/${p.id}`)}
-              className="flex w-full items-center gap-3.5 rounded-[15px] glass-card px-4 py-[15px] text-left transition-transform hover:border-primary/30 active:scale-[.98]"
+              onClick={() => go(`/products/${p.id}`)}
+              disabled={pending}
+              className="flex w-full items-center gap-3.5 rounded-[15px] glass-card px-4 py-[15px] text-left transition-transform hover:border-primary/30 active:scale-[.98] disabled:pointer-events-none disabled:opacity-60"
             >
               <div className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-xl bg-primary/[.07]">
                 <Tag className="text-[17px] text-primary" />

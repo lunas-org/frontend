@@ -11,16 +11,19 @@ import { listProducts, listOrders, getProfile, saveProfile, type Product } from 
 import { toast } from "@/components/Toast";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { useGuardedNav } from "@/lib/useGuardedNav";
 
 export default function SettingsPage() {
   const router = useRouter();
   const { t } = useI18n();
+  const { go, pending: navPending } = useGuardedNav();
   const [products, setProducts] = useState<Product[]>([]);
   const [paidCounts, setPaidCounts] = useState<Record<string, number>>({});
   const [name, setName] = useState("");
   const [wa, setWa] = useState("");
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [confirmLogout, setConfirmLogout] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const ranRef = useRef(false);
 
@@ -70,18 +73,20 @@ export default function SettingsPage() {
   }
 
   async function handleLogout() {
+    if (loggingOut) return;
+    setLoggingOut(true);
     await logout();
     router.replace("/login");
   }
 
   return (
-    <div className="min-h-screen px-6 pb-[92px]">
-        <div className="flex items-center justify-between py-3.5">
+    <div className="min-h-screen px-6 pb-[92px] @md:pb-10">
+        <div className="flex items-center justify-between py-3.5 @lg:mx-auto @lg:max-w-[560px]">
           <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">{t("settings.title")}</h1>
           <LanguageToggle />
         </div>
 
-        <div className="mt-2 flex items-center gap-4 rounded-[18px] glass-card p-[18px]">
+        <div className="mt-2 flex items-center gap-4 rounded-[18px] glass-card p-[18px] @lg:mx-auto @lg:max-w-[560px]">
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
           <button
             onClick={() => fileRef.current?.click()}
@@ -106,7 +111,7 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="mt-3.5 flex flex-col gap-1.5 rounded-[18px] glass-card p-[18px]">
+        <div className="mt-3.5 flex flex-col gap-1.5 rounded-[18px] glass-card p-[18px] @lg:mx-auto @lg:max-w-[560px]">
           <label className="text-[13px] font-semibold text-ink">
             {t("profile.waLabel")} <span className="font-normal text-muted">· {t("profile.optional")}</span>
           </label>
@@ -119,14 +124,15 @@ export default function SettingsPage() {
           />
         </div>
 
-        <p className="mb-2.5 mt-[26px] text-xs font-semibold uppercase tracking-[.1em] text-muted">{t("settings.yourProducts")}</p>
-        <div className="flex flex-col gap-2.5">
+        <p className="mb-2.5 mt-[26px] text-xs font-semibold uppercase tracking-[.1em] text-muted @lg:mx-auto @lg:max-w-[560px]">{t("settings.yourProducts")}</p>
+        <div className="flex flex-col gap-2.5 @lg:mx-auto @lg:max-w-[560px]">
           {products.length === 0 && <p className="text-sm text-muted">{t("settings.noProducts")}</p>}
           {products.map((p) => (
             <button
               key={p.id}
-              onClick={() => router.push(`/products/${p.id}`)}
-              className="flex w-full items-center gap-3.5 rounded-[15px] glass-card px-4 py-[15px] text-left transition-transform hover:border-primary/30 active:scale-[.98]"
+              onClick={() => go(`/products/${p.id}`)}
+              disabled={navPending}
+              className="flex w-full items-center gap-3.5 rounded-[15px] glass-card px-4 py-[15px] text-left transition-transform hover:border-primary/30 active:scale-[.98] disabled:pointer-events-none disabled:opacity-60"
             >
               <div className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-xl bg-primary/[.07]">
                 <Tag className="text-[17px] text-primary" />
@@ -141,10 +147,10 @@ export default function SettingsPage() {
           ))}
         </div>
 
-        <p className="mb-2.5 mt-[26px] text-xs font-semibold uppercase tracking-[.1em] text-muted">{t("settings.account")}</p>
+        <p className="mb-2.5 mt-[26px] text-xs font-semibold uppercase tracking-[.1em] text-muted @lg:mx-auto @lg:max-w-[560px]">{t("settings.account")}</p>
         <button
           onClick={() => setConfirmLogout(true)}
-          className="flex w-full items-center gap-3 rounded-[15px] glass-card px-4 py-[15px] text-sm font-semibold text-danger transition-transform active:scale-[.98]"
+          className="flex w-full items-center gap-3 rounded-[15px] glass-card px-4 py-[15px] text-sm font-semibold text-danger transition-transform active:scale-[.98] @lg:mx-auto @lg:max-w-[560px]"
         >
           <SignOut className="text-lg" />
           {t("settings.logout")}
@@ -152,11 +158,11 @@ export default function SettingsPage() {
 
         {confirmLogout && (
           <div
-            className="absolute inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-[2px] animate-fade-in"
-            onClick={() => setConfirmLogout(false)}
+            className="absolute inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-[2px] animate-fade-in @lg:left-[220px] @lg:items-center"
+            onClick={() => !loggingOut && setConfirmLogout(false)}
           >
             <div
-              className="mb-4 w-[calc(100%-32px)] rounded-[24px] glass-card p-6 text-center"
+              className="mb-4 w-[calc(100%-32px)] rounded-[24px] glass-card p-6 text-center @lg:mb-0 @lg:w-full @lg:max-w-[380px]"
               style={{ animation: "fadeUp .3s cubic-bezier(.2,.7,.3,1) both" }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -168,13 +174,16 @@ export default function SettingsPage() {
               <div className="mt-5 flex flex-col gap-2.5">
                 <button
                   onClick={handleLogout}
-                  className="h-[48px] w-full rounded-2xl bg-danger text-[15px] font-semibold text-white transition-transform active:scale-[.97]"
+                  disabled={loggingOut}
+                  className="flex h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-danger text-[15px] font-semibold text-white transition-transform active:scale-[.97] disabled:pointer-events-none disabled:opacity-70"
                 >
+                  {loggingOut && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />}
                   {t("settings.logout")}
                 </button>
                 <button
                   onClick={() => setConfirmLogout(false)}
-                  className="h-11 w-full rounded-xl text-sm font-medium text-muted transition-colors hover:bg-black/[.04]"
+                  disabled={loggingOut}
+                  className="h-11 w-full rounded-xl text-sm font-medium text-muted transition-colors hover:bg-black/[.04] disabled:pointer-events-none disabled:opacity-40"
                 >
                   {t("settings.logoutCancel")}
                 </button>

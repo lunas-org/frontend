@@ -16,6 +16,7 @@ import { saveProduct, saveOrder, getProfile } from "@/lib/store";
 import { CalmLoader } from "@/components/CalmLoader";
 import { idrEstimate, usdFromIdr, USD_TO_IDR } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
+import { useGuardedNav } from "@/lib/useGuardedNav";
 
 type Status = "checking" | "form" | "creating" | "error";
 type Currency = "USD" | "IDR";
@@ -23,6 +24,7 @@ type Currency = "USD" | "IDR";
 export default function NewProductPage() {
   const router = useRouter();
   const { t } = useI18n();
+  const { go, pending: navPending } = useGuardedNav();
   const [status, setStatus] = useState<Status>("checking");
   const [error, setError] = useState<string | null>(null);
   const [merchant, setMerchant] = useState<string | null>(null);
@@ -150,12 +152,13 @@ export default function NewProductPage() {
   }
 
   return (
-      <form onSubmit={handleSubmit} className="flex min-h-screen flex-col px-6 pb-6">
+      <form onSubmit={handleSubmit} className="flex min-h-screen flex-col px-6 pb-6 @lg:mx-auto @lg:w-full @lg:max-w-[480px]">
         <div className="flex items-center gap-2 py-3.5">
           <button
             type="button"
-            onClick={() => router.push("/dashboard")}
-            className="-ml-2.5 flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-black/5 active:scale-95"
+            onClick={() => go("/dashboard")}
+            disabled={navPending}
+            className="-ml-2.5 flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-black/5 active:scale-95 disabled:pointer-events-none disabled:opacity-60"
           >
             <ArrowLeft className="text-xl text-ink" />
           </button>
