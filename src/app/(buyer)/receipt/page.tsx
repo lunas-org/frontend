@@ -50,7 +50,7 @@ function ReceiptContent() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
+    <div className="flex min-h-screen flex-col px-6 pb-7 @lg:mx-auto @lg:w-full @lg:max-w-[480px] animate-fade-up">
       <div className="flex items-center justify-center gap-2 py-[18px]">
         <Image src="/icon.png" alt="" width={22} height={22} />
         <span className="text-[12.5px] font-semibold tracking-wide text-muted">{t("common.securedBy")}</span>

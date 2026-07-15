@@ -84,14 +84,14 @@ export default function NotificationsPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen px-6 pb-[92px]">
+    <div className="min-h-screen px-6 pb-[92px] @md:pb-10">
       <div className="flex items-baseline justify-between py-5">
         <h1 className="font-display text-[22px] font-extrabold tracking-tight text-ink">{t("activity.title")}</h1>
         {feed.length > 0 && <span className="text-[12.5px] text-muted">{t("activity.events", { count: feed.length })}</span>}
       </div>
 
       {ready && feed.length === 0 && (
-        <div className="flex flex-col items-center gap-3.5 rounded-[20px] border border-dashed border-line bg-white px-6 py-11 text-center">
+        <div className="flex flex-col items-center gap-3.5 rounded-[20px] border border-dashed border-line bg-white px-6 py-11 text-center @lg:mx-auto @lg:max-w-[420px]">
           <Image src="/empty-notification.png" alt="" width={128} height={128} className="animate-float" />
           <div>
             <p className="font-display mb-1 text-base font-bold text-ink">{t("activity.emptyTitle")}</p>
@@ -100,7 +100,7 @@ export default function NotificationsPage() {
         </div>
       )}
 
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2.5 @lg:grid @lg:grid-cols-2 @lg:gap-3">
         {feed.map((f) => {
           const paid = f.kind === "paid";
           const Icon = paid ? CheckCircle : Tag;

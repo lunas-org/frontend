@@ -206,38 +206,40 @@ function CheckoutContent() {
   return (
     <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
       <SecuredHeader onBack={handleBack} />
-      <div className="flex flex-col items-center gap-1.5 py-1.5 text-center">
-        <div className="flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-full glass-card">
-          <Storefront className="text-2xl text-muted" />
+      <div className="@lg:mx-auto @lg:flex @lg:max-w-[720px] @lg:flex-row @lg:items-center @lg:justify-center @lg:gap-14">
+        <div className="flex flex-col items-center gap-1.5 py-1.5 text-center @lg:items-start @lg:text-left">
+          <div className="flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-full glass-card">
+            <Storefront className="text-2xl text-muted" />
+          </div>
+          <p className="mt-1.5 text-[13.5px] text-muted">
+            {t("checkout.paying")} <span className="font-semibold text-ink">{merchantName}</span>
+          </p>
+          <p className="text-[15.5px] font-semibold text-ink">{displayTitle}</p>
+          <p className="font-display mt-1 text-[40px] font-extrabold tracking-tight text-ink">
+            {displayPrice} <span className="text-[17px] font-semibold text-muted">USDC</span>
+          </p>
+          {idrEstimate(displayPrice) && (
+            <p className="-mt-0.5 text-[13px] font-medium text-muted">{idrEstimate(displayPrice)}</p>
+          )}
         </div>
-        <p className="mt-1.5 text-[13.5px] text-muted">
-          {t("checkout.paying")} <span className="font-semibold text-ink">{merchantName}</span>
-        </p>
-        <p className="text-[15.5px] font-semibold text-ink">{displayTitle}</p>
-        <p className="font-display mt-1 text-[40px] font-extrabold tracking-tight text-ink">
-          {displayPrice} <span className="text-[17px] font-semibold text-muted">USDC</span>
-        </p>
-        {idrEstimate(displayPrice) && (
-          <p className="-mt-0.5 text-[13px] font-medium text-muted">{idrEstimate(displayPrice)}</p>
-        )}
-      </div>
 
-      <div className="mt-[18px] flex flex-col items-center gap-3 rounded-[22px] glass-card p-[26px] shadow-[0_6px_24px_rgba(21,22,27,0.05)]">
-        <QRCodeSVG value={isDemo ? "https://lunas.app/demo" : address!} size={200} />
-        <p className="text-center text-[13.5px] text-muted">{t("checkout.scan")}</p>
-        {!isDemo && address && (
-          <button
-            onClick={async () => {
-              await navigator.clipboard.writeText(address);
-              toast(t("checkout.addressCopied"));
-            }}
-            className="mt-1 flex items-center gap-2 rounded-full border border-line bg-paper px-4 py-2 text-[12.5px] font-semibold text-ink transition-transform active:scale-95"
-          >
-            <Copy className="text-[15px] text-primary" />
-            <span className="font-mono">{`${address.slice(0, 6)}…${address.slice(-4)}`}</span>
-          </button>
-        )}
-        <p className="text-center text-[11.5px] leading-relaxed text-muted">{t("checkout.copyHint")}</p>
+        <div className="mt-[18px] flex flex-col items-center gap-3 rounded-[22px] glass-card p-[26px] shadow-[0_6px_24px_rgba(21,22,27,0.05)] @lg:mt-0 @lg:flex-none">
+          <QRCodeSVG value={isDemo ? "https://lunas.app/demo" : address!} size={200} />
+          <p className="text-center text-[13.5px] text-muted">{t("checkout.scan")}</p>
+          {!isDemo && address && (
+            <button
+              onClick={async () => {
+                await navigator.clipboard.writeText(address);
+                toast(t("checkout.addressCopied"));
+              }}
+              className="mt-1 flex items-center gap-2 rounded-full border border-line bg-paper px-4 py-2 text-[12.5px] font-semibold text-ink transition-transform active:scale-95"
+            >
+              <Copy className="text-[15px] text-primary" />
+              <span className="font-mono">{`${address.slice(0, 6)}…${address.slice(-4)}`}</span>
+            </button>
+          )}
+          <p className="text-center text-[11.5px] leading-relaxed text-muted">{t("checkout.copyHint")}</p>
+        </div>
       </div>
 
       {!isDemo && lastChecked && (
@@ -304,7 +306,7 @@ function ProcessingScreen({
 }) {
   const { t } = useI18n();
   return (
-    <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-in">
+    <div className="flex min-h-screen flex-col px-6 pb-7 @lg:mx-auto @lg:w-full @lg:max-w-[480px] animate-fade-in">
       <SecuredHeader onBack={onBack} />
       <div className="flex flex-1 flex-col items-center justify-center gap-[26px] text-center">
         <div className="relative flex h-[180px] w-[180px] items-center justify-center">
@@ -347,7 +349,7 @@ function PendingScreen({
 }) {
   const { t } = useI18n();
   return (
-    <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-in">
+    <div className="flex min-h-screen flex-col px-6 pb-7 @lg:mx-auto @lg:w-full @lg:max-w-[480px] animate-fade-in">
       <SecuredHeader />
       <div className="flex flex-1 flex-col items-center justify-center gap-[26px] text-center">
         <Image src="/payment-pending.png" alt="" width={160} height={160} className="animate-float" />
@@ -422,7 +424,7 @@ function SuccessScreen({
   }
 
   return (
-    <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-in">
+    <div className="flex min-h-screen flex-col px-6 pb-7 @lg:mx-auto @lg:w-full @lg:max-w-[480px] animate-fade-in">
       <div className="flex flex-1 flex-col items-center justify-center gap-[22px] pt-[26px] text-center">
         <div className="relative flex h-[150px] w-[150px] items-center justify-center">
           <span
@@ -508,7 +510,7 @@ function Row({ label, value, mono }: { label: string; value: string; mono?: bool
 function ExpiredScreen({ waTarget, onBack }: { waTarget: string | null; onBack?: () => void }) {
   const { t } = useI18n();
   return (
-    <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
+    <div className="flex min-h-screen flex-col px-6 pb-7 @lg:mx-auto @lg:w-full @lg:max-w-[480px] animate-fade-up">
       <SecuredHeader onBack={onBack} />
       <div className="flex flex-1 flex-col items-center justify-center gap-[18px] text-center">
         <Image src="/link-expired.png" alt="" width={150} height={150} className="animate-float" />
@@ -545,7 +547,7 @@ function AlreadyPaidScreen({
 }) {
   const { t } = useI18n();
   return (
-    <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
+    <div className="flex min-h-screen flex-col px-6 pb-7 @lg:mx-auto @lg:w-full @lg:max-w-[480px] animate-fade-up">
       <SecuredHeader onBack={onBack} />
       <div className="flex flex-1 flex-col items-center justify-center gap-[18px] text-center">
         <Image src="/paid-celebrate.png" alt="" width={150} height={150} className="animate-float" />
@@ -585,7 +587,7 @@ function UnderpaidScreen({
   const remaining = (Number(productPrice) - Number(receivedAmount)).toFixed(2);
 
   return (
-    <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
+    <div className="flex min-h-screen flex-col px-6 pb-7 @lg:mx-auto @lg:w-full @lg:max-w-[480px] animate-fade-up">
       <SecuredHeader onBack={onBack} />
       <div className="flex flex-1 flex-col items-center justify-center gap-[18px] text-center">
         <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
@@ -634,7 +636,7 @@ function UnsupportedTokenScreen({
 }) {
   const { t } = useI18n();
   return (
-    <div className="flex min-h-screen flex-col px-6 pb-7 animate-fade-up">
+    <div className="flex min-h-screen flex-col px-6 pb-7 @lg:mx-auto @lg:w-full @lg:max-w-[480px] animate-fade-up">
       <SecuredHeader onBack={onBackToMerchant} />
       <div className="flex flex-1 flex-col items-center justify-center gap-[18px] text-center">
         <div className="flex h-24 w-24 items-center justify-center rounded-full bg-black/[.05]">

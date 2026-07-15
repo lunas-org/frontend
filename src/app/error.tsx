@@ -18,7 +18,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
 
   return (
     <Frame>
-      <div className="flex min-h-screen flex-col items-center justify-center gap-5 px-8 text-center animate-fade-up">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-5 px-8 text-center animate-fade-up @lg:mx-auto @lg:max-w-[480px]">
         <Image src="/network-error.png" alt="" width={190} height={190} className="animate-float" />
         <div>
           <p className="font-display text-[26px] font-extrabold tracking-tight text-ink">{t("error.title")}</p>

@@ -17,6 +17,7 @@ import {
 import { Frame } from "@/components/Frame";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { useDeviceMode } from "@/lib/deviceMode";
 
 // Landing page — not part of CLAUDE.md's original locked screens, added so the deployed root
 // URL isn't blank. Keeps the same calm/quiet-confidence tone and banned-words rules as the
@@ -25,6 +26,8 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 
 export default function Home() {
   const { t } = useI18n();
+  const { mode, override } = useDeviceMode();
+  const ctaForcedWidth = override ? (mode === "desktop" ? "1180px" : "430px") : undefined;
   const heroRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLElement>(null);
   const [heroGone, setHeroGone] = useState(false);
@@ -67,7 +70,7 @@ export default function Home() {
           </div>
         </header>
 
-        <div ref={heroRef} className="flex flex-col items-center gap-5 px-6 pb-11 pt-[44px] text-center">
+        <div ref={heroRef} className="flex flex-col items-center gap-5 px-6 pb-11 pt-[44px] text-center @lg:mx-auto @lg:max-w-[560px]">
           <Image src="/hero.png" alt="" width={340} height={227} priority className="animate-float" />
           <h1 className="font-display max-w-xs text-[42px] font-extrabold leading-[1.05] tracking-tight text-ink">
             {t("landing.heroTitle")}
@@ -93,7 +96,7 @@ export default function Home() {
           </div>
         </div>
 
-        <section className="border-t border-line px-6 py-9">
+        <section className="border-t border-line px-6 py-9 @lg:mx-auto @lg:max-w-[560px]">
           <p className="mb-5 text-center text-xs font-semibold uppercase tracking-[.12em] text-muted">
             {t("landing.howTitle")}
           </p>
@@ -104,7 +107,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-t border-line px-6 py-9">
+        <section className="border-t border-line px-6 py-9 @lg:mx-auto @lg:max-w-[560px]">
           <p className="mb-5 text-center text-xs font-semibold uppercase tracking-[.12em] text-muted">{t("landing.whyTitle")}</p>
           <div className="grid grid-cols-2 gap-3">
             <WhyCard icon={<Lightning />} title={t("landing.why1Title")} desc={t("landing.why1Desc")} />
@@ -114,7 +117,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-t border-line px-6 py-9">
+        <section className="border-t border-line px-6 py-9 @lg:mx-auto @lg:max-w-[560px]">
           <p className="mb-5 text-center text-xs font-semibold uppercase tracking-[.12em] text-muted">{t("landing.pricingTitle")}</p>
           <div className="glass-panel rounded-[22px] px-6 py-8 text-center">
             <div className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
@@ -125,7 +128,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-t border-line px-6 py-9">
+        <section className="border-t border-line px-6 py-9 @lg:mx-auto @lg:max-w-[560px]">
           <p className="mb-[18px] text-center text-xs font-semibold uppercase tracking-[.12em] text-muted">{t("landing.faqTitle")}</p>
           <div className="flex flex-col gap-2">
             <Faq q={t("landing.faq1Q")} a={t("landing.faq1A")} />
@@ -134,7 +137,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer ref={footerRef} className="flex flex-col items-center gap-3.5 border-t border-line px-6 pb-10 pt-8 text-center">
+        <footer ref={footerRef} className="flex flex-col items-center gap-3.5 border-t border-line px-6 pb-10 pt-8 text-center @lg:mx-auto @lg:max-w-[560px]">
           <Image src="/icon.png" alt="" width={36} height={36} className="opacity-90" />
           <Link
             href="/login"
@@ -151,10 +154,13 @@ export default function Home() {
           showCta ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
         }`}
       >
-        <div className="w-full max-w-[430px] bg-gradient-to-t from-paper via-paper/95 to-transparent px-5 pb-[calc(14px+env(safe-area-inset-bottom))] pt-6">
+        <div
+          className="w-full max-w-[430px] bg-gradient-to-t from-paper via-paper/95 to-transparent px-5 pb-[calc(14px+env(safe-area-inset-bottom))] pt-6 md:max-w-[1180px]"
+          style={ctaForcedWidth ? { maxWidth: ctaForcedWidth } : undefined}
+        >
           <Link
             href="/login"
-            className="pointer-events-auto flex h-[52px] items-center justify-center rounded-2xl glass-btn text-base font-semibold text-white transition-transform active:scale-[.97]"
+            className="pointer-events-auto mx-auto flex h-[52px] max-w-[560px] items-center justify-center rounded-2xl glass-btn text-base font-semibold text-white transition-transform active:scale-[.97]"
           >
             {t("landing.startSelling")}
           </Link>

@@ -12,7 +12,7 @@ export default function NotFound() {
   const { t } = useI18n();
   return (
     <Frame>
-      <div className="flex min-h-screen flex-col items-center justify-center gap-5 px-8 text-center animate-fade-up">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-5 px-8 text-center animate-fade-up @lg:mx-auto @lg:max-w-[480px]">
         <Image src="/404.png" alt="" width={190} height={190} className="animate-float" priority />
         <div>
           <p className="font-display text-[26px] font-extrabold tracking-tight text-ink">
