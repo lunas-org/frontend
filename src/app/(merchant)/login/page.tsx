@@ -27,6 +27,13 @@ export default function LoginPage() {
   const { t } = useI18n();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [goingBack, setGoingBack] = useState(false);
+
+  function handleBack() {
+    if (goingBack || loading) return;
+    setGoingBack(true);
+    router.push("/");
+  }
 
   async function handleLogin() {
     setError(null);
@@ -44,13 +51,16 @@ export default function LoginPage() {
       <div className="flex min-h-screen flex-col">
         <div className="flex items-center justify-between p-3.5">
           <button
-            onClick={() => router.push("/")}
-            className="flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-black/5 active:scale-[.94]"
+            onClick={handleBack}
+            disabled={loading || goingBack}
+            className="flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-black/5 active:scale-[.94] disabled:pointer-events-none disabled:opacity-40"
             aria-label={t("common.back")}
           >
             <ArrowLeft className="text-xl text-ink" />
           </button>
-          <LanguageToggle />
+          <div className={loading || goingBack ? "pointer-events-none opacity-40" : undefined}>
+            <LanguageToggle />
+          </div>
         </div>
 
         <div className="flex flex-1 flex-col items-center justify-center gap-6 px-7 pb-20 text-center">
@@ -62,25 +72,28 @@ export default function LoginPage() {
             <p className="text-[14.5px] leading-relaxed text-muted">{t("login.subtitle")}</p>
           </div>
 
-          {loading ? (
-            <div className="flex h-[54px] items-center gap-2.5 text-sm text-muted">
-              <Image src="/icon.png" alt="" width={26} height={26} className="animate-breathe" style={{ animationDuration: "1s" }} />
-              {t("login.signingIn")}
-              <span className="flex gap-[3px]">
-                <span className="dot-blink h-1 w-1 rounded-full bg-muted" />
-                <span className="dot-blink h-1 w-1 rounded-full bg-muted" style={{ animationDelay: ".2s" }} />
-                <span className="dot-blink h-1 w-1 rounded-full bg-muted" style={{ animationDelay: ".4s" }} />
-              </span>
-            </div>
-          ) : (
-            <button
-              onClick={handleLogin}
-              className="flex h-[54px] w-full max-w-[320px] items-center justify-center gap-3 rounded-2xl glass-card text-[15.5px] font-semibold text-ink shadow-[0_2px_8px_rgba(21,22,27,0.05)] transition-transform active:scale-[.97]"
-            >
-              <GoogleIcon />
-              {t("login.google")}
-            </button>
-          )}
+          <button
+            onClick={handleLogin}
+            disabled={loading || goingBack}
+            className="flex h-[54px] w-full max-w-[320px] items-center justify-center gap-3 rounded-2xl glass-card text-[15.5px] font-semibold text-ink shadow-[0_2px_8px_rgba(21,22,27,0.05)] transition-transform active:scale-[.97] disabled:pointer-events-none"
+          >
+            {loading ? (
+              <>
+                <Image src="/icon.png" alt="" width={22} height={22} className="animate-breathe" style={{ animationDuration: "1s" }} />
+                <span className="text-muted">{t("login.signingIn")}</span>
+                <span className="flex gap-[3px]">
+                  <span className="dot-blink h-1 w-1 rounded-full bg-muted" />
+                  <span className="dot-blink h-1 w-1 rounded-full bg-muted" style={{ animationDelay: ".2s" }} />
+                  <span className="dot-blink h-1 w-1 rounded-full bg-muted" style={{ animationDelay: ".4s" }} />
+                </span>
+              </>
+            ) : (
+              <>
+                <GoogleIcon />
+                {t("login.google")}
+              </>
+            )}
+          </button>
 
           {error && <p className="text-sm text-danger">{error}</p>}
 
