@@ -5,6 +5,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useDeviceMode } from "@/lib/deviceMode";
 
 const LINKS: { href: string; label: string; note?: string }[] = [
   { href: "/", label: "Landing" },
@@ -14,6 +15,7 @@ const LINKS: { href: string; label: string; note?: string }[] = [
   { href: "/products/new", label: "New product" },
   { href: "/profile-setup", label: "Profile setup" },
   { href: "/settings", label: "Settings" },
+  { href: "/dev/loading", label: "Loading (route transition)" },
   {
     href: "/checkout?demo=1&title=Workshop+ticket&price=25.00&merchant=Studio+Mira",
     label: "Checkout (demo)",
@@ -22,8 +24,15 @@ const LINKS: { href: string; label: string; note?: string }[] = [
   { href: "/checkout", label: "Checkout (expired — no params)" },
 ];
 
+const MODES = [
+  { value: null, label: "Auto" },
+  { value: "mobile", label: "Mobile" },
+  { value: "desktop", label: "Desktop" },
+] as const;
+
 export function DevHud() {
   const [open, setOpen] = useState(false);
+  const { mode, override, setOverride } = useDeviceMode();
 
   if (process.env.NODE_ENV !== "development") return null;
 
@@ -31,6 +40,22 @@ export function DevHud() {
     <div className="fixed bottom-3 right-3 z-[999] font-sans text-[13px]">
       {open && (
         <div className="mb-2 w-64 rounded-xl border border-black/10 bg-white/95 p-2 shadow-lg backdrop-blur">
+          <p className="px-2 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-wide text-black/40">
+            Device mode ({mode})
+          </p>
+          <div className="mb-1.5 flex gap-1 px-2">
+            {MODES.map((m) => (
+              <button
+                key={m.label}
+                onClick={() => setOverride(m.value)}
+                className={`flex-1 rounded-lg py-1 text-[11.5px] font-medium transition-colors ${
+                  override === m.value ? "bg-black/80 text-white" : "bg-black/5 text-black/60 hover:bg-black/10"
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
           <p className="px-2 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-wide text-black/40">
             Pages
           </p>

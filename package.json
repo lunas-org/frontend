@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@magic-ext/oauth2": "^15.8.0",
-    "@phosphor-icons/react": "^2.1.7",
     "@magic-sdk/provider": "^33.7.1",
+    "@phosphor-icons/react": "^2.1.7",
     "@supabase/supabase-js": "^2.110.0",
     "@zerodev/ecdsa-validator": "^5.4.9",
     "@zerodev/sdk": "^5.5.10",
@@ -28,6 +28,7 @@
     "viem": "^2.54.1"
   },
   "devDependencies": {
+    "@tailwindcss/container-queries": "^0.1.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

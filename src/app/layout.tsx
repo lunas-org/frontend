@@ -6,6 +6,7 @@ import { DevHud } from "@/components/DevHud";
 import { Toaster } from "@/components/Toast";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { I18nProvider } from "@/lib/i18n";
+import { DeviceModeProvider } from "@/lib/deviceMode";
 
 // Display font (amounts, headlines) + body font, per CLAUDE.md §9's design system.
 // Self-hosted (not next/font/google) so `pnpm dev` never depends on reaching
@@ -66,10 +67,12 @@ export default function RootLayout({
       <body className={`${hankenGrotesk.variable} ${inter.variable} antialiased`}>
         <MotionConfig reducedMotion="user">
           <I18nProvider>
-            {children}
-            <OfflineBanner />
-            <Toaster />
-            <DevHud />
+            <DeviceModeProvider>
+              {children}
+              <OfflineBanner />
+              <Toaster />
+              <DevHud />
+            </DeviceModeProvider>
           </I18nProvider>
         </MotionConfig>
       </body>
