@@ -1,3 +1,6 @@
 allowBuilds:
-  esbuild: set this to true or false
-  unrs-resolver: set this to true or false
+  # esbuild's postinstall only downloads its own platform-specific binary (needed by tsx, which
+  # scripts/hello-sra.ts runs on). unrs-resolver similarly just fetches its native binary for
+  # eslint's import resolution. Both are widely-used, low-risk infra packages.
+  esbuild: true
+  unrs-resolver: true
