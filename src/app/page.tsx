@@ -70,46 +70,58 @@ export default function Home() {
           </div>
         </header>
 
-        <div ref={heroRef} className="flex flex-col items-center gap-5 px-6 pb-11 pt-[44px] text-center @lg:mx-auto @lg:max-w-[560px]">
-          <Image src="/hero.png" alt="" width={340} height={227} priority className="animate-float" />
-          <h1 className="font-display max-w-xs text-[42px] font-extrabold leading-[1.05] tracking-tight text-ink">
-            {t("landing.heroTitle")}
-          </h1>
-          <p className="max-w-[320px] text-[15.5px] leading-relaxed text-muted">{t("landing.heroSubtitle")}</p>
-          <div className="mt-1.5 flex w-full max-w-[320px] flex-col gap-2.5">
-            <Link
-              href="/login"
-              className="flex h-[52px] items-center justify-center rounded-2xl glass-btn text-base font-semibold text-white transition-transform active:scale-[.97]"
-            >
-              {t("landing.startSelling")}
-            </Link>
-            <Link
-              href="/checkout?demo=1&title=Workshop+ticket&price=25.00&merchant=Studio+Mira"
-              className="glass-card flex h-[52px] items-center justify-center rounded-2xl text-[15px] font-medium text-ink transition-transform active:scale-[.97]"
-            >
-              {t("landing.seeCheckout")}
-            </Link>
-          </div>
-          <div className="flex items-center gap-2 text-[12.5px] text-muted">
-            <SealCheck weight="fill" className="text-[16px] text-success" />
-            {t("landing.noFees")}
+        <div
+          ref={heroRef}
+          className="flex flex-col items-center gap-5 px-6 pb-11 pt-[44px] text-center @5xl:mx-auto @5xl:max-w-[980px] @5xl:flex-row @5xl:gap-16 @5xl:py-16 @5xl:text-left"
+        >
+          <Image
+            src="/hero.png"
+            alt=""
+            width={340}
+            height={227}
+            priority
+            className="animate-float @5xl:w-[420px] @5xl:flex-none"
+          />
+          <div className="flex flex-col items-center gap-5 @5xl:items-start">
+            <h1 className="font-display max-w-xs text-[42px] font-extrabold leading-[1.05] tracking-tight text-ink @5xl:max-w-[420px] @5xl:text-[52px]">
+              {t("landing.heroTitle")}
+            </h1>
+            <p className="max-w-[320px] text-[15.5px] leading-relaxed text-muted @5xl:max-w-[400px]">{t("landing.heroSubtitle")}</p>
+            <div className="mt-1.5 flex w-full max-w-[320px] flex-col gap-2.5 @5xl:max-w-[340px]">
+              <Link
+                href="/login"
+                className="flex h-[52px] items-center justify-center rounded-2xl glass-btn text-base font-semibold text-white transition-transform active:scale-[.97]"
+              >
+                {t("landing.startSelling")}
+              </Link>
+              <Link
+                href="/checkout?demo=1&title=Workshop+ticket&price=25.00&merchant=Studio+Mira"
+                className="glass-card flex h-[52px] items-center justify-center rounded-2xl text-[15px] font-medium text-ink transition-transform active:scale-[.97]"
+              >
+                {t("landing.seeCheckout")}
+              </Link>
+            </div>
+            <div className="flex items-center gap-2 text-[12.5px] text-muted">
+              <SealCheck weight="fill" className="text-[16px] text-success" />
+              {t("landing.noFees")}
+            </div>
           </div>
         </div>
 
-        <section className="border-t border-line px-6 py-9 @lg:mx-auto @lg:max-w-[560px]">
+        <section className="border-t border-line px-6 py-9 @5xl:mx-auto @5xl:max-w-[980px] @5xl:py-14">
           <p className="mb-5 text-center text-xs font-semibold uppercase tracking-[.12em] text-muted">
             {t("landing.howTitle")}
           </p>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 @5xl:grid @5xl:grid-cols-3">
             <HowStep icon={<PlusCircle weight="regular" />} title={t("landing.how1Title")} desc={t("landing.how1Desc")} />
             <HowStep icon={<ShareNetwork weight="regular" />} title={t("landing.how2Title")} desc={t("landing.how2Desc")} />
             <HowStep icon={<CheckCircle weight="regular" />} title={t("landing.how3Title")} desc={t("landing.how3Desc")} accent />
           </div>
         </section>
 
-        <section className="border-t border-line px-6 py-9 @lg:mx-auto @lg:max-w-[560px]">
+        <section className="border-t border-line px-6 py-9 @5xl:mx-auto @5xl:max-w-[980px] @5xl:py-14">
           <p className="mb-5 text-center text-xs font-semibold uppercase tracking-[.12em] text-muted">{t("landing.whyTitle")}</p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 @5xl:grid-cols-4">
             <WhyCard icon={<Lightning />} title={t("landing.why1Title")} desc={t("landing.why1Desc")} />
             <WhyCard icon={<GlobeHemisphereEast />} title={t("landing.why2Title")} desc={t("landing.why2Desc")} />
             <WhyCard icon={<DeviceMobile />} title={t("landing.why3Title")} desc={t("landing.why3Desc")} />
@@ -117,9 +129,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-t border-line px-6 py-9 @lg:mx-auto @lg:max-w-[560px]">
+        <section className="border-t border-line px-6 py-9 @5xl:mx-auto @5xl:max-w-[980px] @5xl:py-14">
           <p className="mb-5 text-center text-xs font-semibold uppercase tracking-[.12em] text-muted">{t("landing.pricingTitle")}</p>
-          <div className="glass-panel rounded-[22px] px-6 py-8 text-center">
+          <div className="glass-panel rounded-[22px] px-6 py-8 text-center @5xl:mx-auto @5xl:max-w-[560px] @5xl:px-10 @5xl:py-10">
             <div className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
             <div className="pointer-events-none absolute -bottom-12 -left-8 h-36 w-36 rounded-full bg-mint/20 blur-2xl" />
             <p className="font-display relative text-[48px] font-extrabold leading-none tracking-tight">1%</p>
@@ -128,7 +140,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-t border-line px-6 py-9 @lg:mx-auto @lg:max-w-[560px]">
+        <section className="border-t border-line px-6 py-9 @5xl:mx-auto @5xl:max-w-[720px] @5xl:py-14">
           <p className="mb-[18px] text-center text-xs font-semibold uppercase tracking-[.12em] text-muted">{t("landing.faqTitle")}</p>
           <div className="flex flex-col gap-2">
             <Faq q={t("landing.faq1Q")} a={t("landing.faq1A")} />
@@ -137,7 +149,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer ref={footerRef} className="flex flex-col items-center gap-3.5 border-t border-line px-6 pb-10 pt-8 text-center @lg:mx-auto @lg:max-w-[560px]">
+        <footer ref={footerRef} className="flex flex-col items-center gap-3.5 border-t border-line px-6 pb-10 pt-8 text-center @5xl:mx-auto @5xl:max-w-[720px]">
           <Image src="/icon.png" alt="" width={36} height={36} className="opacity-90" />
           <Link
             href="/login"
