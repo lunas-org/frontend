@@ -158,7 +158,7 @@ export default function ProductDetailPage() {
             onClick={() => setSent(false)}
           >
             <div
-              className="mb-4 w-[calc(100%-32px)] rounded-[24px] border border-line bg-paper p-6 text-center shadow-[0_20px_60px_rgba(21,22,27,0.22)] @lg:w-full @lg:max-w-[380px]"
+              className="mb-4 w-[calc(100%-32px)] rounded-[24px] glass-card p-6 text-center shadow-[0_20px_60px_rgba(21,22,27,0.22)] @lg:w-full @lg:max-w-[380px]"
               style={{ animation: "fadeUp .3s cubic-bezier(.2,.7,.3,1) both" }}
               onClick={(e) => e.stopPropagation()}
             >
