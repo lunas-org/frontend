@@ -158,11 +158,11 @@ export default function SettingsPage() {
 
         {confirmLogout && (
           <div
-            className="absolute inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-[2px] animate-fade-in @lg:left-[220px] @lg:items-center"
+            className="absolute inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-[2px] animate-fade-in @md:left-[220px] @md:items-center"
             onClick={() => !loggingOut && setConfirmLogout(false)}
           >
             <div
-              className="mb-4 w-[calc(100%-32px)] rounded-[24px] glass-card p-6 text-center @lg:mb-0 @lg:w-full @lg:max-w-[380px]"
+              className="mb-4 w-[calc(100%-32px)] rounded-[24px] glass-card p-6 text-center @md:mb-0 @md:w-full @md:max-w-[380px]"
               style={{ animation: "fadeUp .3s cubic-bezier(.2,.7,.3,1) both" }}
               onClick={(e) => e.stopPropagation()}
             >

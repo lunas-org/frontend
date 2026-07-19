@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   // Link previews (WhatsApp / social) — the product lives on shared links, so these matter.
-  // Drop public/og-image.png (1200×630, see ASSET-PLAN.md) and previews light up automatically.
+  // public/og-image.png (1200×630) is already in place.
   openGraph: {
     title: "Lunas",
     description: "Get paid from anywhere. The status flips to Lunas ✓ the moment it's done.",

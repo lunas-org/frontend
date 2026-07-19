@@ -138,6 +138,10 @@ export default function NewProductPage() {
 
       router.push(`/products/${productId}`);
     } catch (err) {
+      // ZeroDev's SDK errors often carry more detail (cause, shortMessage, metaMessages) than
+      // .message alone shows — log the full object so it's inspectable in the browser console,
+      // not just the flattened string shown in the UI.
+      console.error("createProductPaymentAddress failed:", err);
       setError(err instanceof Error ? err.message : String(err));
       setStatus("error");
     }

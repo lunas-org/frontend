@@ -143,7 +143,9 @@ export default function ProductDetailPage() {
           onClick={() => {
             const previewUrl = new URL(checkoutUrl);
             previewUrl.searchParams.set("preview", "1");
-            go(previewUrl.toString());
+            // useGuardedNav's go() -> router.push() expects an internal path, not a full
+            // absolute URL — pass pathname+search only.
+            go(previewUrl.pathname + previewUrl.search);
           }}
           disabled={pending}
           className="flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-semibold text-muted transition-colors hover:bg-black/[.04] hover:text-ink disabled:pointer-events-none disabled:opacity-60"

@@ -207,6 +207,13 @@ export default function MerchantDashboardPage() {
               <div className="glass-panel rounded-[20px] px-6 py-[26px]">
                 <div className="pointer-events-none absolute -bottom-[38px] -right-[30px] h-[150px] w-[150px] rounded-full bg-white/10 blur-2xl" />
                 <div className="pointer-events-none absolute -bottom-3.5 right-3.5 h-[74px] w-[74px] rounded-full bg-mint/20 blur-2xl" />
+                <button
+                  onClick={() => go("/withdraw")}
+                  disabled={pending}
+                  className="absolute right-4 top-4 z-10 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-[12px] font-semibold text-white backdrop-blur-sm transition-transform active:scale-95 disabled:pointer-events-none disabled:opacity-60"
+                >
+                  {t("withdraw.cashOut")}
+                </button>
                 <p className="relative text-[12.5px] text-white/65">{t("dashboard.balance")}</p>
                 <p
                   key={bumpKey}

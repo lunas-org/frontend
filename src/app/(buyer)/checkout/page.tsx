@@ -16,13 +16,20 @@ import { QRCodeSVG } from "qrcode.react";
 import Image from "next/image";
 import { createPublicClient, http } from "viem";
 import { arbitrum, arbitrumSepolia } from "viem/chains";
-import { Storefront, WhatsappLogo, ArrowLeft, Copy } from "@phosphor-icons/react/dist/ssr";
+import { Storefront, WhatsappLogo, ArrowLeft, Copy, Wallet } from "@phosphor-icons/react/dist/ssr";
 import { checkoutAbi } from "@/lib/checkoutAbi";
 import { Frame } from "@/components/Frame";
 import { toast } from "@/components/Toast";
 import { idrEstimate } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
 import { CalmLoader } from "@/components/CalmLoader";
+import {
+  payWithWallet,
+  getInjectedWallet,
+  chainLabel,
+  PayWithWalletError,
+  SUPPORTED_CHAIN_NAMES,
+} from "@/lib/payWithWallet";
 
 const POLL_INTERVAL_MS = 4000;
 
@@ -180,7 +187,14 @@ function CheckoutContent() {
   }
 
   if (screen === "unsupportedToken") {
-    return <UnsupportedTokenScreen onBack={() => setScreen("checkout")} onBackToMerchant={handleBack} />;
+    return (
+      <UnsupportedTokenScreen
+        merchantName={merchantName}
+        waTarget={waTarget}
+        onBack={() => setScreen("checkout")}
+        onBackToMerchant={handleBack}
+      />
+    );
   }
 
   if (screen === "processing") {
@@ -242,6 +256,10 @@ function CheckoutContent() {
         </div>
       </div>
 
+      {!isDemo && address && (
+        <PayWithWalletPanel address={address as `0x${string}`} defaultAmount={displayPrice} />
+      )}
+
       {!isDemo && lastChecked && (
         <div className="mt-3 flex items-center justify-center gap-2 text-[12px] text-muted">
           <span className="relative flex h-2 w-2">
@@ -291,6 +309,85 @@ function CheckoutContent() {
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+// Pay-with-connected-wallet panel — only renders on a device with an injected wallet extension
+// (desktop MetaMask/etc). Lets the buyer set the exact USDC amount on-site and fire a transfer to
+// the order's SRA address straight from their extension — no QR scan, no hand-typed address or
+// amount. Hidden entirely when no injected wallet is present, so mobile/QR flow is unaffected.
+function PayWithWalletPanel({
+  address,
+  defaultAmount,
+}: {
+  address: `0x${string}`;
+  defaultAmount: string;
+}) {
+  const { t } = useI18n();
+  const [hasWallet, setHasWallet] = useState(false);
+  const [amount, setAmount] = useState(defaultAmount);
+  const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    setHasWallet(!!getInjectedWallet());
+  }, []);
+
+  if (!hasWallet) return null;
+
+  // USDC only. The SRA + Checkout.sol settle in USDC; a non-USDC deposit (e.g. ETH) would bridge
+  // but then fail the USDC fulfillOrder action and get stuck. See src/lib/zerodev.ts.
+  async function pay() {
+    if (sending || !(parseFloat(amount) > 0)) return;
+    setSending(true);
+    try {
+      await payWithWallet({ sraAddress: address, usdcAmount: amount });
+      toast(t("checkout.paySent"));
+    } catch (err) {
+      const code = err instanceof PayWithWalletError ? err.message : "";
+      const onChain =
+        err instanceof PayWithWalletError && err.detectedChainId
+          ? t("checkout.payOnChain", { chain: chainLabel(err.detectedChainId) })
+          : "";
+      if (code === "unsupported-chain") {
+        toast(`${onChain} ${t("checkout.payUnsupportedChain", { chains: SUPPORTED_CHAIN_NAMES })}`.trim(), "error");
+      } else {
+        // A user rejecting the wallet prompt is expected — stay quiet for that, surface anything else.
+        const msg = err instanceof Error ? err.message : String(err);
+        if (!/reject|denied|4001/i.test(msg)) toast(t("checkout.payFailed"), "error");
+      }
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="mx-auto mt-4 w-full max-w-[360px] rounded-2xl glass-card p-4">
+      <p className="text-center text-[11.5px] font-semibold uppercase tracking-[.1em] text-muted">
+        {t("checkout.payOr")}
+      </p>
+
+      <div className="mt-3 flex items-center gap-2 rounded-xl border border-line bg-paper px-3">
+        <input
+          value={amount}
+          onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ""))}
+          inputMode="decimal"
+          aria-label={t("checkout.payAmount")}
+          className="font-display h-11 w-full bg-transparent text-[15px] font-semibold text-ink focus:outline-none"
+        />
+        <span className="text-[13px] font-semibold text-muted">USDC</span>
+      </div>
+
+      <p className="mt-2 text-[11.5px] leading-relaxed text-muted">{t("checkout.payFeeHint")}</p>
+
+      <button
+        onClick={pay}
+        disabled={sending}
+        className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl glass-btn text-[14px] font-semibold text-white transition-transform active:scale-[.97] disabled:opacity-60"
+      >
+        <Wallet weight="fill" className="text-base" />
+        {sending ? t("checkout.paySending") : t("checkout.payWithWallet")}
+      </button>
     </div>
   );
 }
@@ -628,13 +725,20 @@ function UnderpaidScreen({
 }
 
 function UnsupportedTokenScreen({
+  merchantName,
+  waTarget,
   onBack,
   onBackToMerchant,
 }: {
+  merchantName: string;
+  waTarget?: string | null;
   onBack: () => void;
   onBackToMerchant?: () => void;
 }) {
   const { t } = useI18n();
+  // There's no confirmed self-service recovery URL for an SRA deposit in an unsupported token —
+  // ZeroDev doesn't publish one (see context/zerodev-sra.md), so the one real, working channel
+  // we have is the merchant who created this order. Route there instead of guessing a link.
   return (
     <div className="flex min-h-screen flex-col px-6 pb-7 @lg:mx-auto @lg:w-full @lg:max-w-[480px] animate-fade-up">
       <SecuredHeader onBack={onBackToMerchant} />
@@ -648,14 +752,21 @@ function UnsupportedTokenScreen({
           </p>
           <p className="max-w-[280px] text-sm leading-relaxed text-muted">{t("checkout.unsupportedDesc")}</p>
         </div>
-        <a
-          href="https://app.zerodev.app/sra"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex h-[46px] items-center rounded-[13px] glass-btn px-[22px] text-sm font-semibold text-white transition-transform active:scale-95"
-        >
-          {t("checkout.retrieve")}
-        </a>
+        {waTarget ? (
+          <a
+            href={`https://wa.me/${waTarget}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-[46px] items-center gap-2 rounded-[13px] glass-btn px-[22px] text-sm font-semibold text-white transition-transform active:scale-95"
+          >
+            <WhatsappLogo weight="fill" className="text-lg" />
+            {t("checkout.retrieve", { name: merchantName })}
+          </a>
+        ) : (
+          <p className="max-w-[280px] text-[13px] leading-relaxed text-muted">
+            {t("checkout.retrieveNoContact", { name: merchantName })}
+          </p>
+        )}
         <button
           onClick={onBack}
           className="h-11 rounded-xl px-[22px] text-sm font-medium text-muted transition-colors hover:bg-black/[.04]"
