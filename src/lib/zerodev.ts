@@ -10,7 +10,7 @@
 //   directly, no ethers wrapping needed.
 // - Kernel version pinned to KERNEL_V3_3 per context/zerodev-arbitrum.md's Arbitrum guidance.
 
-import { http, createPublicClient, type EIP1193Provider } from "viem";
+import { http, createPublicClient, encodeFunctionData, parseUnits, type EIP1193Provider } from "viem";
 import { arbitrum, arbitrumSepolia, mainnet, optimism, base, polygon, bsc } from "viem/chains";
 import { entryPoint07Address } from "viem/account-abstraction";
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
@@ -137,6 +137,42 @@ export async function recoverStuckTokens({
   await kernelClient.waitForUserOperationReceipt({ hash: userOpHash });
 
   return { userOpHash, receiver: withdraw.receiver };
+}
+
+/**
+ * Withdraws `amount` USDC from the merchant's smart account to `to`, on Arbitrum One, via a
+ * sponsored userOp. This is a REAL on-chain transfer — but operating the smart account on mainnet
+ * goes through ZeroDev's mainnet bundler, which returns HTTP 402 "No Plan found" without a paid
+ * plan. So today this surfaces that 402 (honest: it proves the integration is real and would move
+ * funds the moment a plan is active), and it just works once a plan exists. `amount` is a human
+ * string like "12.50".
+ */
+export async function withdrawUsdc({
+  provider,
+  to,
+  amount,
+}: {
+  provider: EIP1193Provider;
+  to: `0x${string}`;
+  amount: string;
+}) {
+  const usdcAddress = process.env.NEXT_PUBLIC_USDC_ADDRESS_MAINNET as `0x${string}` | undefined;
+  if (!usdcAddress) throw new Error("NEXT_PUBLIC_USDC_ADDRESS_MAINNET is not set");
+
+  const { account, kernelClient } = await createMainnetKernelClient(provider);
+
+  const data = encodeFunctionData({
+    abi: erc20Abi,
+    functionName: "transfer",
+    args: [to, parseUnits(amount, 6)], // USDC has 6 decimals
+  });
+
+  const userOpHash = await kernelClient.sendUserOperation({
+    callData: await account.encodeCalls([{ to: usdcAddress, value: 0n, data }]),
+  });
+  await kernelClient.waitForUserOperationReceipt({ hash: userOpHash });
+
+  return userOpHash;
 }
 
 // Chains a buyer can pay FROM, per SRA's mainnet SUPPORTED_TOKENS (checked directly against the

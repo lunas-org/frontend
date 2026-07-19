@@ -15,7 +15,7 @@ const LINKS: { href: string; label: string; note?: string }[] = [
   { href: "/products/new", label: "New product" },
   { href: "/profile-setup", label: "Profile setup" },
   { href: "/settings", label: "Settings" },
-  { href: "/withdraw", label: "Cash out (withdraw demo)" },
+  { href: "/withdraw", label: "Cash out (withdraw — real, 402 without plan)" },
   { href: "/dev/loading", label: "Loading (route transition)" },
   {
     href: "/checkout?demo=1&title=Workshop+ticket&price=25.00&merchant=Studio+Mira",

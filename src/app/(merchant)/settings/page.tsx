@@ -5,8 +5,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Tag, CaretRight, SignOut } from "@phosphor-icons/react/dist/ssr";
-import { isLoggedIn, logout } from "@/lib/magic";
+import { Camera, Tag, CaretRight, SignOut, Copy, CheckCircle } from "@phosphor-icons/react/dist/ssr";
+import { isLoggedIn, logout, getMagicProvider } from "@/lib/magic";
+import { createSmartAccountFromProvider } from "@/lib/zerodev";
 import { listProducts, listOrders, getProfile, saveProfile, type Product } from "@/lib/store";
 import { toast } from "@/components/Toast";
 import { useI18n } from "@/lib/i18n";
@@ -24,6 +25,8 @@ export default function SettingsPage() {
   const [avatar, setAvatar] = useState<string | undefined>(undefined);
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [address, setAddress] = useState<string | null>(null);
+  const [copiedAddr, setCopiedAddr] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const ranRef = useRef(false);
 
@@ -51,8 +54,24 @@ export default function SettingsPage() {
       }
       setProducts(ps);
       setPaidCounts(counts);
+
+      // The merchant's account address (where payments settle). Best-effort — if it fails to
+      // resolve, the section just doesn't render.
+      try {
+        const { address: addr } = await createSmartAccountFromProvider(getMagicProvider());
+        setAddress(addr);
+      } catch {
+        // ignore — no address shown
+      }
     })();
   }, [router]);
+
+  async function copyAddress() {
+    if (!address) return;
+    await navigator.clipboard.writeText(address);
+    setCopiedAddr(true);
+    setTimeout(() => setCopiedAddr(false), 1800);
+  }
 
   function persist(patch: Partial<{ displayName: string; waNumber: string; avatarDataUrl: string }>) {
     const current = getProfile() ?? { displayName: "" };
@@ -123,6 +142,27 @@ export default function SettingsPage() {
             className="h-11 rounded-xl border-[1.5px] border-line bg-white px-3 text-[14.5px] text-ink transition-shadow focus:border-primary focus:shadow-[0_0_0_3px_rgba(47,42,107,0.12)] focus:outline-none"
           />
         </div>
+
+        {address && (
+          <div className="mt-3.5 flex flex-col gap-2 rounded-[18px] glass-card p-[18px] @lg:mx-auto @lg:max-w-[560px]">
+            <div className="flex items-center justify-between">
+              <label className="text-[13px] font-semibold text-ink">{t("settings.addressLabel")}</label>
+              <button
+                onClick={copyAddress}
+                className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold transition-transform active:scale-95 ${
+                  copiedAddr ? "text-success" : "text-primary"
+                }`}
+              >
+                {copiedAddr ? <CheckCircle weight="fill" className="text-sm" /> : <Copy className="text-sm" />}
+                {copiedAddr ? t("detail.copied") : t("settings.copy")}
+              </button>
+            </div>
+            <p className="break-all rounded-xl bg-black/[.03] px-3 py-2.5 font-mono text-[12.5px] leading-relaxed text-ink">
+              {address}
+            </p>
+            <p className="text-[12px] leading-relaxed text-muted">{t("settings.addressHint")}</p>
+          </div>
+        )}
 
         <p className="mb-2.5 mt-[26px] text-xs font-semibold uppercase tracking-[.1em] text-muted @lg:mx-auto @lg:max-w-[560px]">{t("settings.yourProducts")}</p>
         <div className="flex flex-col gap-2.5 @lg:mx-auto @lg:max-w-[560px]">
