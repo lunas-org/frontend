@@ -9,9 +9,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { CheckCircle, Tag } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircle, Tag, ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn } from "@/lib/magic";
 import { listOrders, listProducts, type Product } from "@/lib/store";
+import { explorerTxUrl } from "@/lib/explorer";
 import { useI18n } from "@/lib/i18n";
 
 type Feed = {
@@ -20,6 +21,7 @@ type Feed = {
   subtitle: string;
   amount?: string;
   ts: number;
+  explorerUrl?: string;
 };
 
 function relativeTime(ms: number) {
@@ -65,6 +67,7 @@ export default function NotificationsPage() {
             subtitle: p?.title ?? "",
             amount: p?.priceUsd,
             ts: o.paidAt ?? o.createdAt,
+            explorerUrl: o.txHash ? (explorerTxUrl(o.chainId, o.txHash) ?? undefined) : undefined,
           });
         }
       }
@@ -121,7 +124,22 @@ export default function NotificationsPage() {
                   {f.subtitle || t("common.product")} · {relativeTime(f.ts)}
                 </p>
               </div>
-              {f.amount && <span className="font-display whitespace-nowrap text-[14.5px] font-bold text-success">+{f.amount}</span>}
+              {f.amount && (
+                <div className="flex flex-none flex-col items-end gap-0.5">
+                  <span className="font-display whitespace-nowrap text-[14.5px] font-bold text-success">+{f.amount}</span>
+                  {f.explorerUrl && (
+                    <a
+                      href={f.explorerUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-[10.5px] font-semibold text-muted transition-colors hover:text-primary"
+                    >
+                      {t("activity.viewProof")}
+                      <ArrowSquareOut className="text-[10.5px]" />
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
           );
         })}

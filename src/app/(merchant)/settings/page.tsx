@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { Camera, Tag, CaretRight, SignOut, Copy, CheckCircle } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn, logout, getMagicProvider } from "@/lib/magic";
 import { createSmartAccountFromProvider } from "@/lib/zerodev";
-import { listProducts, listOrders, getProfile, saveProfile, type Product } from "@/lib/store";
+import { listProducts, listOrders, getProfile, saveProfile, setActiveAddress, clearActiveAddress, type Product } from "@/lib/store";
 import { toast } from "@/components/Toast";
 import { useI18n } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -40,6 +40,17 @@ export default function SettingsPage() {
         router.replace("/login");
         return;
       }
+      // Resolve + scope the store to this address FIRST — before any read below — so this
+      // page never shows a different Google account's cached products/orders/profile.
+      try {
+        const { address: addr } = await createSmartAccountFromProvider(getMagicProvider());
+        setAddress(addr);
+        setActiveAddress(addr);
+      } catch {
+        // ignore — address section just won't render, but keep going: reads below will fall
+        // back to whatever address was last set (e.g. by the dashboard this session)
+      }
+
       const profile = getProfile();
       if (profile) {
         setName(profile.displayName ?? "");
@@ -54,15 +65,6 @@ export default function SettingsPage() {
       }
       setProducts(ps);
       setPaidCounts(counts);
-
-      // The merchant's account address (where payments settle). Best-effort — if it fails to
-      // resolve, the section just doesn't render.
-      try {
-        const { address: addr } = await createSmartAccountFromProvider(getMagicProvider());
-        setAddress(addr);
-      } catch {
-        // ignore — no address shown
-      }
     })();
   }, [router]);
 
@@ -95,6 +97,9 @@ export default function SettingsPage() {
     if (loggingOut) return;
     setLoggingOut(true);
     await logout();
+    // So a stale address is never read before the next login resolves its own (see
+    // src/lib/store.ts on why the active address matters).
+    clearActiveAddress();
     router.replace("/login");
   }
 

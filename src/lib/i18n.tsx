@@ -134,6 +134,11 @@ const en = {
   "detail.sentTitle": "Ready to share",
   "detail.sentDesc": "Your payment link is on its way. The buyer just opens it, scans, and pays.",
   "detail.sentDone": "Done",
+  "detail.delete": "Delete product",
+  "detail.deleteTitle": "Delete this product?",
+  "detail.deleteDesc": "This removes it from your dashboard. If anyone still has the payment link, it may still work — this doesn't cancel it on-chain.",
+  "detail.deleteConfirm": "Delete product",
+  "detail.deleteCancel": "Cancel",
 
   "activity.title": "Activity",
   "activity.events": "{count} events",
@@ -141,6 +146,7 @@ const en = {
   "activity.emptyDesc": "When a buyer pays, you'll see the Lunas ✓ land right here.",
   "activity.paidTitle": "Payment received · Lunas ✓",
   "activity.createdTitle": "Payment link created",
+  "activity.viewProof": "View proof",
 
   "settings.title": "Settings",
   "settings.editHint": "Tap name or photo to edit",
@@ -395,6 +401,11 @@ const id: Record<Key, string> = {
   "detail.sentTitle": "Siap dibagikan",
   "detail.sentDesc": "Tautan pembayaran Anda dalam perjalanan. Pembeli tinggal membuka, memindai, dan membayar.",
   "detail.sentDone": "Selesai",
+  "detail.delete": "Hapus produk",
+  "detail.deleteTitle": "Hapus produk ini?",
+  "detail.deleteDesc": "Ini cuma menghapusnya dari dashboard kamu. Kalau ada yang masih punya link pembayarannya, link itu bisa jadi masih berfungsi — ini gak membatalkannya di on-chain.",
+  "detail.deleteConfirm": "Hapus produk",
+  "detail.deleteCancel": "Batal",
 
   "activity.title": "Aktivitas",
   "activity.events": "{count} kejadian",
@@ -402,6 +413,7 @@ const id: Record<Key, string> = {
   "activity.emptyDesc": "Saat pembeli membayar, Lunas ✓ akan muncul tepat di sini.",
   "activity.paidTitle": "Pembayaran diterima · Lunas ✓",
   "activity.createdTitle": "Tautan pembayaran dibuat",
+  "activity.viewProof": "Lihat bukti",
 
   "settings.title": "Pengaturan",
   "settings.editHint": "Ketuk nama atau foto untuk ubah",

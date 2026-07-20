@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { handleOAuthRedirect, getMagicProvider } from "@/lib/magic";
 import { createSmartAccountFromProvider } from "@/lib/zerodev";
-import { hasSeenProfileSetup } from "@/lib/store";
+import { hasSeenProfileSetup, setActiveAddress } from "@/lib/store";
 import { CalmLoader } from "@/components/CalmLoader";
 import { useI18n } from "@/lib/i18n";
 
@@ -29,7 +29,11 @@ export default function LoginCallbackPage() {
       try {
         await handleOAuthRedirect();
         const provider = getMagicProvider();
-        await createSmartAccountFromProvider(provider);
+        const { address } = await createSmartAccountFromProvider(provider);
+        // Scope the local store to this address BEFORE reading/writing anything else — this
+        // is what stops a different Google account on the same browser from seeing the
+        // previous account's cached products/orders/profile (see src/lib/store.ts).
+        setActiveAddress(address);
         // This page is a one-shot OAuth redirect target — a refresh here has no PKCE
         // session left to consume. Move to a stable page immediately on success.
         router.replace(hasSeenProfileSetup() ? "/dashboard" : "/profile-setup");

@@ -14,6 +14,7 @@ import Image from "next/image";
 import { ArrowLeft, CheckCircle, WarningCircle, CaretDown } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn, getMagicProvider } from "@/lib/magic";
 import { createSmartAccountFromProvider, getUsdcBalance, withdrawUsdc } from "@/lib/zerodev";
+import { setActiveAddress } from "@/lib/store";
 import { USD_TO_IDR } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
 import { CalmLoader } from "@/components/CalmLoader";
@@ -55,6 +56,7 @@ export default function WithdrawPage() {
       }
       try {
         const { address } = await createSmartAccountFromProvider(getMagicProvider());
+        setActiveAddress(address);
         const bal = await getUsdcBalance(address);
         const n = bal ? parseFloat(bal) : 0;
         setBalance(n);

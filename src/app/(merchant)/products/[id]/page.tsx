@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
-import { ArrowLeft, CheckCircle, Link as LinkIcon, WhatsappLogo, Eye } from "@phosphor-icons/react/dist/ssr";
-import { getProduct, getOrdersForProduct, getProfile, type Product, type Order } from "@/lib/store";
+import { ArrowLeft, CheckCircle, Link as LinkIcon, WhatsappLogo, Eye, Trash } from "@phosphor-icons/react/dist/ssr";
+import { getProduct, getOrdersForProduct, getProfile, deleteProduct, type Product, type Order } from "@/lib/store";
 import { CalmLoader } from "@/components/CalmLoader";
 import { toast } from "@/components/Toast";
 import { idrEstimate } from "@/lib/format";
@@ -25,6 +25,8 @@ export default function ProductDetailPage() {
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [sent, setSent] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const p = getProduct(params.id);
@@ -51,6 +53,13 @@ export default function ProductDetailPage() {
       setCheckoutUrl(url.toString());
     }
   }, [params.id, router]);
+
+  function handleDelete() {
+    if (deleting) return;
+    setDeleting(true);
+    deleteProduct(params.id);
+    router.replace("/dashboard");
+  }
 
   async function handleCopy() {
     if (!checkoutUrl) return;
@@ -153,6 +162,49 @@ export default function ProductDetailPage() {
           <Eye className="text-lg" />
           {t("detail.preview")}
         </button>
+
+        <button
+          onClick={() => setConfirmDelete(true)}
+          className="flex h-11 items-center justify-center gap-2 rounded-xl text-[13.5px] font-semibold text-danger/70 transition-colors hover:bg-danger/5 hover:text-danger"
+        >
+          <Trash className="text-base" />
+          {t("detail.delete")}
+        </button>
+
+        {confirmDelete && (
+          <div
+            className="absolute inset-0 z-50 flex items-end justify-center bg-ink/30 backdrop-blur-[2px] animate-fade-in"
+            onClick={() => !deleting && setConfirmDelete(false)}
+          >
+            <div
+              className="mb-4 w-[calc(100%-32px)] rounded-[24px] glass-card p-6 text-center shadow-[0_20px_60px_rgba(21,22,27,0.22)] @lg:w-full @lg:max-w-[380px]"
+              style={{ animation: "fadeUp .3s cubic-bezier(.2,.7,.3,1) both" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mx-auto mb-3.5 flex h-14 w-14 items-center justify-center rounded-full bg-danger/10">
+                <Trash className="text-2xl text-danger" />
+              </div>
+              <p className="font-display text-xl font-extrabold tracking-tight text-ink">{t("detail.deleteTitle")}</p>
+              <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted">{t("detail.deleteDesc")}</p>
+              <div className="mt-5 flex flex-col gap-2.5">
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="flex h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-danger text-[15px] font-semibold text-white transition-transform active:scale-[.97] disabled:pointer-events-none disabled:opacity-70"
+                >
+                  {t("detail.deleteConfirm")}
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(false)}
+                  disabled={deleting}
+                  className="h-11 w-full rounded-xl text-sm font-medium text-muted transition-colors hover:bg-black/[.04] disabled:pointer-events-none disabled:opacity-40"
+                >
+                  {t("detail.deleteCancel")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {sent && (
           <div

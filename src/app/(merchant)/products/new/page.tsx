@@ -12,7 +12,7 @@ import { arbitrum } from "viem/chains";
 import { ArrowLeft, Tag, WarningCircle } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn, getMagicProvider } from "@/lib/magic";
 import { createSmartAccountFromProvider, createProductPaymentAddress, generateOrderId } from "@/lib/zerodev";
-import { saveProduct, saveOrder, getProfile } from "@/lib/store";
+import { saveProduct, saveOrder, getProfile, setActiveAddress } from "@/lib/store";
 import { CalmLoader } from "@/components/CalmLoader";
 import { idrEstimate, usdFromIdr, USD_TO_IDR } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
@@ -56,6 +56,7 @@ export default function NewProductPage() {
       const provider = getMagicProvider();
       const { address } = await createSmartAccountFromProvider(provider);
       setMerchant(address);
+      setActiveAddress(address);
       const profile = getProfile();
       if (profile?.displayName) setDisplayName(profile.displayName);
       setStatus("form");

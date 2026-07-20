@@ -11,11 +11,12 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createPublicClient, http } from "viem";
 import { arbitrum, arbitrumSepolia } from "viem/chains";
-import { Plus, ArrowCircleUp, Check, User } from "@phosphor-icons/react/dist/ssr";
+import { Plus, ArrowCircleUp, Check, User, ArrowSquareOut } from "@phosphor-icons/react/dist/ssr";
 import { isLoggedIn, getMagicProvider } from "@/lib/magic";
 import { createSmartAccountFromProvider, getUsdcBalance } from "@/lib/zerodev";
-import { listOrders, listProducts, markOrderPaid, getProfile, type Order, type Product } from "@/lib/store";
-import { checkoutAbi } from "@/lib/checkoutAbi";
+import { listOrders, listProducts, markOrderPaid, getProfile, setActiveAddress, type Order, type Product } from "@/lib/store";
+import { checkoutAbi, orderPaidEvent } from "@/lib/checkoutAbi";
+import { explorerTxUrl } from "@/lib/explorer";
 import { toast } from "@/components/Toast";
 import { useI18n } from "@/lib/i18n";
 import { useGuardedNav } from "@/lib/useGuardedNav";
@@ -71,6 +72,7 @@ export default function MerchantDashboardPage() {
         const provider = getMagicProvider();
         const { address: addr } = await createSmartAccountFromProvider(provider);
         setAddress(addr);
+        setActiveAddress(addr);
 
         const profile = getProfile();
         if (profile?.displayName) setDisplayName(profile.displayName);
@@ -114,7 +116,27 @@ export default function MerchantDashboardPage() {
             args: [o.id],
           });
           if (isPaid) {
-            markOrderPaid(o.id);
+            // Best-effort: look up the fulfillOrder transaction hash from the OrderPaid event
+            // log so the dashboard can link out to the block explorer. Bounded to a recent
+            // block range (this fires within seconds of the payment landing) rather than
+            // scanning from genesis, which public RPCs on a high-throughput chain like
+            // Arbitrum won't allow anyway. If this fails for any reason, the order still gets
+            // marked paid — it just won't have an explorer link.
+            let txHash: `0x${string}` | undefined;
+            try {
+              const latest = await client.getBlockNumber();
+              const logs = await client.getLogs({
+                address: o.checkoutAddress,
+                event: orderPaidEvent,
+                args: { orderId: o.id },
+                fromBlock: latest > 10_000n ? latest - 10_000n : 0n,
+                toBlock: "latest",
+              });
+              txHash = logs[0]?.transactionHash ?? undefined;
+            } catch {
+              // no explorer link for this one — not worth failing the whole poll over
+            }
+            markOrderPaid(o.id, txHash);
             settled++;
           }
         } catch {
@@ -276,9 +298,22 @@ export default function MerchantDashboardPage() {
                       </div>
                       <div className="text-right">
                         <p className="font-display text-[14.5px] font-bold text-ink">+{productPrice(o.productId)}</p>
-                        <p className={`mt-0.5 text-[11px] font-semibold ${o.status === "paid" ? "text-success" : "text-muted"}`}>
-                          {o.status === "paid" ? t("dashboard.paid") : t("dashboard.pending")}
-                        </p>
+                        {o.status === "paid" && o.txHash && explorerTxUrl(o.chainId, o.txHash) ? (
+                          <a
+                            href={explorerTxUrl(o.chainId, o.txHash)!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="mt-0.5 flex items-center justify-end gap-1 text-[11px] font-semibold text-success transition-opacity hover:opacity-70"
+                          >
+                            {t("dashboard.paid")}
+                            <ArrowSquareOut className="text-[11px]" />
+                          </a>
+                        ) : (
+                          <p className={`mt-0.5 text-[11px] font-semibold ${o.status === "paid" ? "text-success" : "text-muted"}`}>
+                            {o.status === "paid" ? t("dashboard.paid") : t("dashboard.pending")}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))}
